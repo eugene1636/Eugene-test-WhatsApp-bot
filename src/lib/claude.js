@@ -4,7 +4,8 @@ import { config } from '../config.js';
  * Claude API client (spec section 2: "Brain — Claude API").
  */
 
-const API_URL = 'https://api.anthropic.com/v1/messages';
+// Overridable so the local simulator can stand in for the Claude API.
+const API_URL = `${process.env.ANTHROPIC_API_ROOT || 'https://api.anthropic.com'}/v1/messages`;
 
 /**
  * @param {string} system - the fully-interpolated Olivia system prompt

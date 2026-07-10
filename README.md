@@ -68,6 +68,42 @@ body variables `{{1}}`=first name, `{{2}}..{{4}}`=pick lines), marks picks
 sent, stamps `Last Assistant Touch`. Use `--dry-run` first; `--as-text` sends
 free-form for testing inside an open 24h session.
 
+## Try it right now — no accounts needed
+
+```
+npm run simulate            # interactive: you play the member texting Olivia
+npm run simulate -- --demo  # scripted walkthrough of all the pilot rules
+```
+
+The simulator runs the **real** webhook server and Workflow A code; only the
+three external services are faked (WhatsApp sends are printed to the console,
+Airtable is in-memory and seeded with you as a pilot member, Claude replies
+are canned). Export a real `ANTHROPIC_API_KEY` first and you get live Olivia
+replies through the actual system prompt. In interactive mode, `/human <text>`
+simulates a teammate replying from the phone app (the agent then pauses on
+the thread) and `/state` dumps the in-memory Airtable.
+
+## Testing with a real WhatsApp phone
+
+Meta gives every developer a **free test number** that can message up to 5
+opted-in phones — perfect for the pre-pilot test, no Coexistence provider
+needed yet:
+
+1. developers.facebook.com → create an app → add the **WhatsApp** product.
+2. On *API Setup* you get a test number, a `WHATSAPP_PHONE_NUMBER_ID`, and a
+   temporary access token — put them in `.env`. Add your personal WhatsApp
+   under "To" recipients and verify it.
+3. Run this server somewhere Meta can reach (deploy it, or run locally behind
+   a tunnel like `cloudflared tunnel --url http://localhost:3000`), then in
+   *Configuration* set the webhook to `https://<public-host>/webhook` with
+   your `WHATSAPP_VERIFY_TOKEN`, and subscribe to the **messages** field.
+4. Add yourself as a member in Airtable (or a test base) with your real
+   number in `WhatsApp Phone`, send the test-number's hello template to open
+   the session, then text it — Olivia answers.
+
+Note: `smb_message_echoes` (human-pause) only exists on a real Coexistence
+number, so that rule is testable in the simulator but not on the test number.
+
 ## Setup
 
 1. **Prereqs** — Node ≥ 20.6; the warmed-up number connected to the Cloud API

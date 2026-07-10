@@ -8,6 +8,7 @@
     "start": "node --env-file=.env src/server.js",
     "dev": "node --env-file=.env --watch src/server.js",
     "test": "node --test",
+    "simulate": "node scripts/simulator.js",
     "setup:airtable": "node --env-file=.env scripts/setup-airtable.js",
     "drafts:welcome": "node --env-file=.env scripts/generate-welcome-drafts.js",
     "digest:weekly": "node --env-file=.env scripts/send-weekly-digest.js"

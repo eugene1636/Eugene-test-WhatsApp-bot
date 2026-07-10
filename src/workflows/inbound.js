@@ -115,15 +115,20 @@ async function replyToBatch(phone, batch) {
   ]);
 
   const system = buildSystemPrompt(member, picks);
-  const messages = logRowsToMessages(logRows);
 
-  // The batched inbound texts are already in the log (and therefore in
-  // `messages`); if the log read raced the writes, fall back to the batch.
-  if (!messages.length || messages[messages.length - 1].role !== 'user') {
-    messages.push({
-      role: 'user',
-      content: batch.map((b) => b.event.text).join('\n'),
-    });
+  // The current batch is already in the log, but WhatsApp timestamps are
+  // whole seconds, so a burst ties on Timestamp and can come back from
+  // Airtable out of order. Drop the batch's rows from history and append
+  // the batch itself (which is in arrival order) as the final user turn.
+  const batchIds = new Set(batch.map((b) => b.event.id));
+  const history = logRows.filter((r) => !batchIds.has(r.fields['WhatsApp Message ID']));
+  const messages = logRowsToMessages(history);
+  const batchText = batch.map((b) => b.event.text).join('\n');
+  const last = messages[messages.length - 1];
+  if (last && last.role === 'user') {
+    last.content += `\n${batchText}`; // keep roles alternating
+  } else {
+    messages.push({ role: 'user', content: batchText });
   }
 
   const reply = await askClaude(system, messages);

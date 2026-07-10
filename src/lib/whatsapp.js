@@ -9,7 +9,9 @@ import { toWhatsAppId } from './phone.js';
 
 async function graphRequest(payload) {
   const { apiVersion } = config.whatsapp;
-  const url = `https://graph.facebook.com/${apiVersion}/${config.whatsapp.phoneNumberId()}/messages`;
+  // Overridable so the local simulator can stand in for the Graph API.
+  const graphRoot = process.env.WHATSAPP_GRAPH_ROOT || 'https://graph.facebook.com';
+  const url = `${graphRoot}/${apiVersion}/${config.whatsapp.phoneNumberId()}/messages`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {

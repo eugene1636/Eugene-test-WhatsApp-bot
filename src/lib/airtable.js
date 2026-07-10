@@ -6,7 +6,8 @@ import { normalizePhone } from './phone.js';
  * (spec section 6). Tables: Members, Conversation Log, Pilot Picks.
  */
 
-const API_ROOT = 'https://api.airtable.com/v0';
+// Overridable so the local simulator can stand in for Airtable.
+const API_ROOT = process.env.AIRTABLE_API_ROOT || 'https://api.airtable.com/v0';
 
 async function airtableRequest(method, path, body) {
   const url = `${API_ROOT}/${config.airtable.baseId()}/${encodeURIComponent(path.table)}${path.suffix || ''}`;
