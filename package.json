@@ -1,0 +1,21 @@
+{
+  "name": "olivia-whatsapp-assistant",
+  "version": "0.1.0",
+  "description": "MDS Personal Assistant (Olivia) — V1 pilot: WhatsApp Cloud API (Coexistence) + Claude + Airtable",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "dev": "node --env-file=.env --watch src/server.js",
+    "test": "node --test",
+    "setup:airtable": "node --env-file=.env scripts/setup-airtable.js",
+    "drafts:welcome": "node --env-file=.env scripts/generate-welcome-drafts.js",
+    "digest:weekly": "node --env-file=.env scripts/send-weekly-digest.js"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
