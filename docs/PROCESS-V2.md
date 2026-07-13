@@ -89,15 +89,23 @@ confirm each one** (he's flagged that data is scattered across multiple
 bases/tables; each source below needs one clean, agreed home before the
 agent may read it).
 
+**Confirmed 2026-07-13 (scan of Eugene's Airtable account):** six bases
+exist — `MDS Member Database`, `Members (Operations)`, `Member ScoreCard`,
+`Event Planning Base`, `Partnerships`, `MDS Team Org & Performance`. This
+confirms Andy's "multiple bases" point (member data alone appears in at
+least three) and that Events and Partnerships have obvious candidate homes.
+🔴 Table-level inventory of each base still to do (needs Airtable access
+approval in the code session, or Andy documents it).
+
 | # | Source | Used for | Where it lives today | Available? |
 |---|--------|----------|----------------------|-----------|
 | 1 | **Video/content library** | weekly picks, topic answers | 🔴 confirm (recordings platform? Airtable index?) | 🔴 |
 | 2 | **WhatsApp chats** (community groups) | topic summaries ("what's happening in the AI chat") | Andy moved WA data to Supabase | 🔴 partially? |
-| 3 | **Member database** | profiles, matchmaking, intros | Airtable (multiple bases — needs one canonical) | 🔴 |
+| 3 | **Member database** | profiles, matchmaking, intros | Airtable — at least 3 candidate bases: `MDS Member Database`, `Members (Operations)`, `Member ScoreCard` → 🔴 pick ONE canonical | ✅ exists, needs canonicalizing |
 | 4 | **People-they-should-meet / matchmaking signals** | intros | 🔴 derived from member DB? niche/interest tags needed | 🔴 |
-| 5 | **Partner offers** | weekly picks, offer questions | 🔴 confirm | 🔴 |
+| 5 | **Partner offers** | weekly picks, offer questions | Airtable `Partnerships` base — 🔴 confirm it holds member-facing offers | ✅ candidate exists |
 | 6 | **Facebook group** | topic answers | Facebook — *known hard to extract; likely out of scope* | ❌ assume no |
-| 7 | **Events (all upcoming)** | "next event in NY", weekly picks | 🔴 confirm (calendar? Airtable? site?) | 🔴 |
+| 7 | **Events (all upcoming)** | "next event in NY", weekly picks | Airtable `Event Planning Base` — 🔴 confirm it covers all upcoming events with dates/locations | ✅ candidate exists |
 | 8 | **Programs** (walked through on 1:1 calls) | onboarding answers, picks | 🔴 confirm — a simple static list may be enough | 🔴 |
 
 For each source, "properly defined" =
