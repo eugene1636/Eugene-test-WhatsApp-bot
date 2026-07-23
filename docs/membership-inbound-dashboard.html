@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Membership Inbound — Jan 2025 to Jul 2026</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --good: #006300;
+    --s1: #2a78d6; /* blue */
+    --s2: #eb6834; /* orange */
+    --s3: #1baf7a; /* aqua */
+    --s4: #eda100; /* yellow */
+    --s5: #e87ba4; /* magenta */
+    --s6: #008300; /* green */
+    --neutral-seg: #b9b7ae;
+    --tooltip-bg: #1f1f1e;
+    --tooltip-ink: #f5f5f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --good: #0ca30c;
+      --s1: #3987e5;
+      --s2: #d95926;
+      --s3: #199e70;
+      --s4: #c98500;
+      --s5: #d55181;
+      --s6: #008300;
+      --neutral-seg: #55544f;
+      --tooltip-bg: #f5f5f2;
+      --tooltip-ink: #1a1a19;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --good: #0ca30c;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
+    --s5: #d55181;
+    --s6: #008300;
+    --neutral-seg: #55544f;
+    --tooltip-bg: #f5f5f2;
+    --tooltip-ink: #1a1a19;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --good: #006300;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --s3: #1baf7a;
+    --s4: #eda100;
+    --s5: #e87ba4;
+    --s6: #008300;
+    --neutral-seg: #b9b7ae;
+    --tooltip-bg: #1f1f1e;
+    --tooltip-ink: #f5f5f2;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 24px 72px; }
+
+  header.page-head { margin-bottom: 28px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 6px;
+  }
+  h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .subtitle { color: var(--ink-2); margin: 0; max-width: 62ch; }
+  .asof { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+  section { margin-top: 40px; }
+  .sec-head { margin-bottom: 14px; }
+  .sec-head h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sec-head p { margin: 0; color: var(--ink-2); max-width: 72ch; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px 14px;
+  }
+  .kpi .label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .kpi .value { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; }
+  .kpi .delta { font-size: 12.5px; margin-top: 2px; color: var(--ink-2); }
+  .kpi .delta .up { color: var(--good); font-weight: 600; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 20px 14px; overflow: hidden;
+  }
+  .card + .card { margin-top: 16px; }
+  .card h3 { font-size: 14px; font-weight: 650; margin: 0 0 2px; }
+  .card .card-sub { font-size: 12.5px; color: var(--muted); margin: 0 0 12px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 10px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+  .chart-box { position: relative; }
+  .chart-box svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .axis-t { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .dlabel { fill: var(--ink-2); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dlabel-strong { fill: var(--ink); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .seg-label { font-size: 11px; font-weight: 600; fill: #ffffff; }
+  .row-label { fill: var(--ink-2); font-size: 12px; font-weight: 600; }
+  .end-label { font-size: 12px; font-weight: 700; }
+
+  #tooltip {
+    position: fixed; z-index: 50; pointer-events: none; display: none;
+    background: var(--tooltip-bg); color: var(--tooltip-ink);
+    border-radius: 8px; padding: 8px 11px; font-size: 12px; line-height: 1.45;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25); max-width: 260px;
+  }
+  #tooltip .tt-title { font-weight: 700; margin-bottom: 2px; }
+  #tooltip .tt-row { display: flex; justify-content: space-between; gap: 14px; }
+  #tooltip .tt-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 780px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .insights { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 780px) { .insights { grid-template-columns: 1fr; } }
+  .insight {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .insight h4 { margin: 0 0 6px; font-size: 13.5px; font-weight: 700; }
+  .insight p { margin: 0; color: var(--ink-2); font-size: 13px; }
+  .insight .num { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+
+  .pace-head { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 0; }
+  .pace-value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+  .pace-badge {
+    font-size: 12px; font-weight: 700; color: var(--good);
+    border: 1px solid currentColor; border-radius: 999px; padding: 1px 9px;
+  }
+  .pace-ref { font-size: 12px; color: var(--muted); margin: 2px 0 10px; }
+
+  .table-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 7px 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); border-bottom: 1px solid var(--baseline);
+  }
+  tbody tr { border-bottom: 1px solid var(--grid); }
+  tbody tr:last-child { border-bottom: none; }
+  tr.yr-divider td { border-top: 2px solid var(--baseline); }
+  td .pos { color: var(--good); }
+  td.mono-muted { color: var(--muted); }
+
+  .footnote { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .kpi, .card, .insight { transition: border-color 0.15s ease; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="page-head">
+    <p class="eyebrow">MDS Membership · Inbound Review</p>
+    <h1>New Membership Inbound — January 2025 to July 2026</h1>
+    <p class="subtitle">New paid memberships from the payments tracker: month-over-month pace, year-over-year comparison, channel mix, and plan mix — with the takeaways at the bottom.</p>
+    <p class="asof" id="asof"></p>
+  </header>
+
+  <section>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>The four pacing numbers</h2>
+      <p>The four aspects of growth we pace, year over year: members in, cash collected upfront, MRR added, and potential first-year (annualized) revenue. Each chart is the cumulative running total through the year — 2025 in blue, 2026 in orange. Growth badges compare 2026 YTD against the same period of 2025 (through Jul 21).</p>
+    </div>
+    <div class="grid-2" id="pacing"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Month-over-month pace</h2>
+      <p>New paid members per month across the full 19 months of data. 2025 built from a slow start to an October peak; 2026 has run at a structurally higher level since February.</p>
+    </div>
+    <div class="card">
+      <h3>New members per month</h3>
+      <p class="card-sub">Count of membership payments by month paid · July 2026 is partial (through Jul 21)</p>
+      <div class="legend" id="legend-monthly"></div>
+      <div class="chart-box" id="chart-monthly"></div>
+    </div>
+    <div class="card">
+      <h3>First-year revenue booked per month</h3>
+      <p class="card-sub">Sum of potential first-year revenue for members who paid that month (after discounts)</p>
+      <div class="chart-box" id="chart-revenue"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Year over year</h2>
+      <p>January–July 2026 against the same months of 2025 — every single month is up, and the cumulative gap has widened all year.</p>
+    </div>
+    <div class="card">
+      <h3>New members by month, 2025 vs 2026</h3>
+      <p class="card-sub">Jan–Jul of each year · label shows YoY change · July 2026 has 10 selling days left</p>
+      <div class="legend" id="legend-yoy"></div>
+      <div class="chart-box" id="chart-yoy"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Where new members come from</h2>
+      <p>Lead-source mix shifted sharply between years: referrals alone carried 2025, while 2026 is spread across events, event-assisted referrals, and a new second-seat motion.</p>
+    </div>
+    <div class="card">
+      <h3>Lead source share of new members</h3>
+      <p class="card-sub">Share of each year's new members · 2026 is year-to-date</p>
+      <div class="legend" id="legend-src"></div>
+      <div class="chart-box" id="chart-src"></div>
+    </div>
+    <div class="card">
+      <h3>Plan mix</h3>
+      <p class="card-sub">Share of new members by plan type at signup</p>
+      <div class="legend" id="legend-plan"></div>
+      <div class="chart-box" id="chart-plan"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>What we see happening</h2>
+    </div>
+    <div class="insights" id="insights"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Monthly detail</h2>
+      <p>The numbers behind every chart above.</p>
+    </div>
+    <div class="card">
+      <div class="table-scroll" id="table"></div>
+      <p class="footnote">Source: New Membership Payments Tracker — sheets “2025 Paid”, “2026”, and “Jul 2026” (the July tab carries three payments not yet on the master sheet), member-level records grouped by month of membership payment. Potential first-year revenue uses the tracker’s “Potential First Year Rev” column; cash upfront uses the “Paid” column (amount actually collected at signup); MRR uses the tracker’s MRR columns (first-year revenue ÷ 12). Data runs through July 21, 2026. Lead sources are normalized (e.g. “Website Application - Referral” → Referral); 4 members with no recorded source are shown as Other.</p>
+    </div>
+  </section>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const DATA = {"months":[{"ym":"2025-01","y":2025,"m":1,"n":4,"rev":23671,"cash":17701,"mrr":1973,"src":{"Referral":3,"Event":1,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":4,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-02","y":2025,"m":2,"n":6,"rev":42775,"cash":36915,"mrr":3565,"src":{"Referral":6,"Event":0,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-03","y":2025,"m":3,"n":6,"rev":41648,"cash":27114,"mrr":3387,"src":{"Referral":3,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":1,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-04","y":2025,"m":4,"n":9,"rev":63473,"cash":58941,"mrr":5289,"src":{"Referral":4,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":9,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-05","y":2025,"m":5,"n":10,"rev":52453,"cash":56273,"mrr":4371,"src":{"Referral":7,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":7,"Quarterly":1,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-06","y":2025,"m":6,"n":10,"rev":60402,"cash":75402,"mrr":5034,"src":{"Referral":1,"Event":6,"Referral + Event":0,"Website Application":2,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":4,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-07","y":2025,"m":7,"n":13,"rev":67408,"cash":57073,"mrr":5617,"src":{"Referral":3,"Event":8,"Referral + Event":0,"Website Application":1,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":3,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-08","y":2025,"m":8,"n":11,"rev":58359,"cash":38952,"mrr":4863,"src":{"Referral":4,"Event":2,"Referral + Event":0,"Website Application":2,"Facebook Ads":2,"Second Seat":0},"oth":1,"pln":{"Annual":3,"Quarterly":6,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-09","y":2025,"m":9,"n":14,"rev":85869,"cash":55944,"mrr":7069,"src":{"Referral":8,"Event":2,"Referral + Event":0,"Website Application":3,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":7,"Quarterly":5,"Second Seat":2,"Emerging Market":0}},{"ym":"2025-10","y":2025,"m":10,"n":18,"rev":119342,"cash":76930,"mrr":9902,"src":{"Referral":8,"Event":3,"Referral + Event":1,"Website Application":1,"Facebook Ads":5,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":7,"Second Seat":1,"Emerging Market":0}},{"ym":"2025-11","y":2025,"m":11,"n":7,"rev":45926,"cash":27971,"mrr":3827,"src":{"Referral":1,"Event":0,"Referral + Event":2,"Website Application":1,"Facebook Ads":3,"Second Seat":0},"oth":0,"pln":{"Annual":2,"Quarterly":3,"Second Seat":1,"Emerging Market":1}},{"ym":"2025-12","y":2025,"m":12,"n":11,"rev":71410,"cash":53457,"mrr":5951,"src":{"Referral":1,"Event":1,"Referral + Event":2,"Website Application":6,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":3,"Second Seat":2,"Emerging Market":1}},{"ym":"2026-01","y":2026,"m":1,"n":10,"rev":60406,"cash":36466,"mrr":5034,"src":{"Referral":1,"Event":4,"Referral + Event":1,"Website Application":0,"Facebook Ads":1,"Second Seat":3},"oth":0,"pln":{"Annual":3,"Quarterly":4,"Second Seat":3,"Emerging Market":0}},{"ym":"2026-02","y":2026,"m":2,"n":14,"rev":92018,"cash":42938,"mrr":7668,"src":{"Referral":4,"Event":2,"Referral + Event":3,"Website Application":3,"Facebook Ads":1,"Second Seat":1},"oth":0,"pln":{"Annual":3,"Quarterly":9,"Second Seat":1,"Emerging Market":1}},{"ym":"2026-03","y":2026,"m":3,"n":23,"rev":115062,"cash":104412,"mrr":9588,"src":{"Referral":4,"Event":2,"Referral + Event":7,"Website Application":0,"Facebook Ads":2,"Second Seat":8},"oth":0,"pln":{"Annual":8,"Quarterly":4,"Second Seat":8,"Emerging Market":3}},{"ym":"2026-04","y":2026,"m":4,"n":18,"rev":116760,"cash":60425,"mrr":9730,"src":{"Referral":2,"Event":9,"Referral + Event":4,"Website Application":2,"Facebook Ads":0,"Second Seat":1},"oth":0,"pln":{"Annual":6,"Quarterly":10,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-05","y":2026,"m":5,"n":12,"rev":84858,"cash":48948,"mrr":7072,"src":{"Referral":3,"Event":0,"Referral + Event":4,"Website Application":3,"Facebook Ads":0,"Second Seat":2},"oth":0,"pln":{"Annual":4,"Quarterly":6,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-06","y":2026,"m":6,"n":12,"rev":82328,"cash":41448,"mrr":6861,"src":{"Referral":4,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":2,"Second Seat":0},"oth":1,"pln":{"Annual":4,"Quarterly":8,"Second Seat":0,"Emerging Market":0}},{"ym":"2026-07","y":2026,"m":7,"n":14,"rev":91837,"cash":54442,"mrr":7653,"src":{"Referral":1,"Event":2,"Referral + Event":2,"Website Application":6,"Facebook Ads":0,"Second Seat":1},"oth":2,"pln":{"Annual":5,"Quarterly":7,"Second Seat":1,"Emerging Market":1}}],"years":{"2025":{"n":119,"rev":732736,"cash":582673,"mrr":60849,"avg":6157,"src":{"Referral":49,"Event":30,"Referral + Event":5,"Website Application":20,"Facebook Ads":14,"Second Seat":0},"oth":1,"pln":{"Annual":74,"Quarterly":33,"Second Seat":6,"Emerging Market":6},"matched":{"n":54,"rev":327859,"cash":311433,"mrr":27238}},"2026":{"n":103,"rev":643269,"cash":389079,"mrr":53606,"avg":6245,"src":{"Referral":19,"Event":22,"Referral + Event":21,"Website Application":16,"Facebook Ads":6,"Second Seat":16},"oth":3,"pln":{"Annual":33,"Quarterly":48,"Second Seat":17,"Emerging Market":5},"matched":{"n":103,"rev":643269,"cash":389079,"mrr":53606}}},"asof":"2026-07-21"};
+
+const M_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const SRC_KEYS = ['Referral','Event','Referral + Event','Website Application','Facebook Ads','Second Seat'];
+const PLN_KEYS = ['Annual','Quarterly','Second Seat','Emerging Market'];
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmtK = v => v >= 1000 ? '$' + (v/1000).toFixed(v >= 100000 ? 0 : 1) + 'K' : '$' + Math.round(v);
+const fmt$ = v => '$' + Math.round(v).toLocaleString('en-US');
+const pct = (a,b) => (a>=b?'+':'−') + Math.round(Math.abs(a-b)/b*100) + '%';
+
+/* ---------- tooltip ---------- */
+const tt = document.getElementById('tooltip');
+function showTT(html, ev) {
+  tt.innerHTML = html;
+  tt.style.display = 'block';
+  moveTT(ev);
+}
+function moveTT(ev) {
+  const pad = 14, w = tt.offsetWidth, h = tt.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > window.innerWidth - 8) x = ev.clientX - w - pad;
+  if (y + h > window.innerHeight - 8) y = ev.clientY - h - pad;
+  tt.style.left = x + 'px'; tt.style.top = y + 'px';
+}
+function hideTT() { tt.style.display = 'none'; }
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+function roundedTopBar(x, y, w, h, r) {
+  if (h <= 0) return '';
+  r = Math.min(r, w/2, h);
+  return `M${x},${y+h} L${x},${y+r} Q${x},${y} ${x+r},${y} L${x+w-r},${y} Q${x+w},${y} ${x+w},${y+r} L${x+w},${y+h} Z`;
+}
+function legend(elId, items) {
+  const el = document.getElementById(elId);
+  el.innerHTML = items.map(i =>
+    `<span class="item"><span class="swatch" style="background:${i.color}"></span>${i.label}</span>`).join('');
+}
+
+const months = DATA.months;
+const y25 = DATA.years['2025'], y26 = DATA.years['2026'], m25 = DATA.years['2025'].matched;
+const TOTAL = { n: y25.n + y26.n, rev: y25.rev + y26.rev };
+
+document.getElementById('asof').textContent =
+  `Data through July 21, 2026 · ${TOTAL.n} new members and ${fmt$(TOTAL.rev)} in booked first-year revenue since January 2025`;
+
+/* ---------- KPI tiles ---------- */
+(function kpis() {
+  const el = document.getElementById('kpis');
+  const tiles = [
+    { label: '2026 new members YTD', value: y26.n,
+      delta: `<span class="up">+${Math.round((y26.n - m25.n)/m25.n*100)}%</span> vs same period 2025 (${m25.n})` },
+    { label: 'Avg first-year value, 2026', value: fmt$(y26.avg),
+      delta: `2025 average: ${fmt$(y25.avg)}` },
+    { label: 'Best month on record', value: '23',
+      delta: 'March 2026 · 2025 peak was 18 (Oct)' },
+    { label: '2025 full year', value: y25.n,
+      delta: `${fmtK(y25.rev)} first-year revenue` },
+  ];
+  el.innerHTML = tiles.map(t => `
+    <div class="kpi">
+      <div class="label">${t.label}</div>
+      <div class="value">${t.value}</div>
+      <div class="delta">${t.delta}</div>
+    </div>`).join('');
+})();
+
+/* ---------- pacing scorecard: four cumulative metrics ---------- */
+const PACE_METRICS = [
+  { key: 'n',    title: 'New members in',                 fmt: v => Math.round(v).toLocaleString('en-US'), tickFmt: v => Math.round(v),
+    sub: 'Count of new membership payments' },
+  { key: 'cash', title: 'Cash collected upfront',         fmt: fmt$, tickFmt: fmtK,
+    sub: 'Amount actually paid at signup (“Paid” column)' },
+  { key: 'mrr',  title: 'MRR added',                      fmt: v => fmt$(v) + '/mo', tickFmt: fmtK,
+    sub: 'Monthly recurring revenue added by new members' },
+  { key: 'rev',  title: 'Potential first-year revenue',   fmt: fmt$, tickFmt: fmtK,
+    sub: 'Annualized value of new memberships after discounts' },
+];
+
+function renderPacing() {
+  const wrap = document.getElementById('pacing');
+  wrap.innerHTML = PACE_METRICS.map((mt, i) => `
+    <div class="card">
+      <h3>${mt.title}</h3>
+      <p class="card-sub">${mt.sub}</p>
+      <div class="pace-head">
+        <span class="pace-value">${mt.fmt(y26[mt.key])}</span>
+        <span class="pace-badge">+${Math.round((y26[mt.key] - m25[mt.key])/m25[mt.key]*100)}% YoY</span>
+      </div>
+      <p class="pace-ref">2025 same period: ${mt.fmt(m25[mt.key])} · 2025 full year: ${mt.fmt(y25[mt.key])}</p>
+      <div class="legend" id="legend-pace-${mt.key}"></div>
+      <div class="chart-box" id="chart-pace-${mt.key}"></div>
+    </div>`).join('');
+  PACE_METRICS.forEach(mt => cumeChart('chart-pace-' + mt.key, mo => mo[mt.key], mt));
+}
+
+function cumeChart(containerId, valueFn, mt) {
+  const box = document.getElementById(containerId);
+  box.innerHTML = '';
+  const W = Math.max(box.clientWidth, 380), H = 210;
+  const pad = { l: 48, r: 54, t: 12, b: 28 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Cumulative ${mt.title} by month, 2025 versus 2026` });
+
+  const c25 = [], c26 = [];
+  let a = 0, b = 0;
+  for (let m = 1; m <= 12; m++) {
+    const mo = months.find(x => x.y===2025 && x.m===m); a += valueFn(mo); c25.push(a);
+    const mo6 = months.find(x => x.y===2026 && x.m===m);
+    if (mo6) { b += valueFn(mo6); c26.push(b); }
+  }
+  const maxV = Math.max(c25[11], c26[c26.length-1]) * 1.08;
+  const xAt = m => pad.l + (m-1)/11 * iw;
+  const yAt = v => pad.t + ih - (v/maxV)*ih;
+
+  for (let i = 1; i <= 3; i++) {
+    const v = maxV/1.08 * i/3;
+    svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: yAt(v), y2: yAt(v), stroke: cssVar('--grid'), 'stroke-width': 1 }));
+    const t = svgEl('text', { x: pad.l-6, y: yAt(v)+3.5, 'text-anchor': 'end', class: 'axis-t' });
+    t.textContent = mt.tickFmt(v); svg.appendChild(t);
+  }
+  svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: pad.t+ih, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1 }));
+  [1,4,7,10,12].forEach(m => {
+    const t = svgEl('text', { x: xAt(m), y: pad.t+ih+16, 'text-anchor': 'middle', class: 'axis-t' });
+    t.textContent = M_NAMES[m-1]; svg.appendChild(t);
+  });
+
+  const pathOf = arr => arr.map((v,i) => (i?'L':'M') + xAt(i+1) + ',' + yAt(v)).join(' ');
+  svg.appendChild(svgEl('path', { d: pathOf(c25), fill: 'none', stroke: cssVar('--s1'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
+  svg.appendChild(svgEl('path', { d: pathOf(c26), fill: 'none', stroke: cssVar('--s2'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
+  svg.appendChild(svgEl('circle', { cx: xAt(12), cy: yAt(c25[11]), r: 4, fill: cssVar('--s1'), stroke: cssVar('--surface'), 'stroke-width': 2 }));
+  svg.appendChild(svgEl('circle', { cx: xAt(7), cy: yAt(c26[6]), r: 4, fill: cssVar('--s2'), stroke: cssVar('--surface'), 'stroke-width': 2 }));
+  const l25 = svgEl('text', { x: xAt(12)+7, y: yAt(c25[11])+4, class: 'end-label', fill: cssVar('--s1') });
+  l25.textContent = mt.tickFmt(c25[11]); svg.appendChild(l25);
+  const l26 = svgEl('text', { x: xAt(7)+7, y: yAt(c26[6])+4, class: 'end-label', fill: cssVar('--s2') });
+  l26.textContent = mt.tickFmt(c26[6]); svg.appendChild(l26);
+
+  const cross = svgEl('line', { y1: pad.t, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1, 'stroke-dasharray': '3 3', visibility: 'hidden' });
+  svg.appendChild(cross);
+  const hit = svgEl('rect', { x: pad.l, y: pad.t, width: iw, height: ih, fill: 'transparent' });
+  hit.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect();
+    const sx = (ev.clientX - r.left) * (W / r.width);
+    const m = Math.max(1, Math.min(12, Math.round((sx - pad.l)/iw*11 + 1)));
+    cross.setAttribute('x1', xAt(m)); cross.setAttribute('x2', xAt(m));
+    cross.setAttribute('visibility', 'visible');
+    const v26 = m <= 7 ? c26[m-1] : null;
+    showTT(`<div class="tt-title">${mt.title} · through ${M_NAMES[m-1]}</div>
+      <div class="tt-row"><span>2025</span><span>${mt.fmt(c25[m-1])}</span></div>
+      ${v26 !== null ? `<div class="tt-row"><span>2026</span><span>${mt.fmt(v26)}</span></div>
+      <div class="tt-row"><span>YoY</span><span>${pct(v26, c25[m-1])}</span></div>` : ''}`, ev);
+  });
+  hit.addEventListener('mouseleave', () => { cross.setAttribute('visibility', 'hidden'); hideTT(); });
+  svg.appendChild(hit);
+  box.appendChild(svg);
+  legend('legend-pace-' + mt.key, [
+    { label: '2025 (full year)', color: cssVar('--s1') },
+    { label: '2026 (YTD)', color: cssVar('--s2') },
+  ]);
+}
+
+/* ---------- shared bar-chart renderer for the two monthly panels ---------- */
+function monthlyBars(containerId, valueFn, labelFn, ttFn, opts) {
+  const box = document.getElementById(containerId);
+  box.innerHTML = '';
+  const W = Math.max(box.clientWidth, 560), H = opts.height || 240;
+  const pad = { l: opts.padL || 34, r: 8, t: 24, b: 34 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': opts.aria });
+
+  const vals = months.map(valueFn);
+  const maxV = Math.max(...vals) * 1.12;
+  const n = months.length;
+  const slot = iw / n;
+  const bw = Math.min(slot - 3, 34);
+
+  // hatch pattern for partial month
+  const defs = svgEl('defs', {});
+  defs.innerHTML = `<pattern id="hatch-${containerId}" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="transparent"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="${cssVar('--surface')}" stroke-width="2.5" stroke-opacity="0.55"/>
+    </pattern>`;
+  svg.appendChild(defs);
+
+  // gridlines (3 steps)
+  const steps = opts.gridSteps || 3;
+  for (let i = 1; i <= steps; i++) {
+    const v = maxV / 1.12 * i / steps;
+    const y = pad.t + ih - (v / maxV) * ih;
+    svg.appendChild(svgEl('line', { x1: pad.l, x2: W - pad.r, y1: y, y2: y, stroke: cssVar('--grid'), 'stroke-width': 1 }));
+    const t = svgEl('text', { x: pad.l - 6, y: y + 3.5, 'text-anchor': 'end', class: 'axis-t' });
+    t.textContent = opts.tickFmt(v);
+    svg.appendChild(t);
+  }
+  // baseline
+  svg.appendChild(svgEl('line', { x1: pad.l, x2: W - pad.r, y1: pad.t + ih, y2: pad.t + ih, stroke: cssVar('--baseline'), 'stroke-width': 1 }));
+
+  months.forEach((mo, i) => {
+    const v = vals[i];
+    const x = pad.l + slot * i + (slot - bw) / 2;
+    const h = (v / maxV) * ih;
+    const y = pad.t + ih - h;
+    const color = mo.y === 2025 ? cssVar('--s1') : cssVar('--s2');
+    const isPartial = mo.ym === '2026-07';
+    const p = svgEl('path', { d: roundedTopBar(x, y, bw, h, 4), fill: color });
+    svg.appendChild(p);
+    if (isPartial) svg.appendChild(svgEl('path', { d: roundedTopBar(x, y, bw, h, 4), fill: `url(#hatch-${containerId})` }));
+
+    // selective direct labels
+    if (labelFn(mo, i, vals)) {
+      const t = svgEl('text', { x: x + bw/2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel-strong' });
+      t.textContent = opts.tickFmt(v, true);
+      svg.appendChild(t);
+    }
+    // x labels: Jan + year markers, quarterly
+    if (mo.m === 1 || mo.m === 4 || mo.m === 7 || mo.m === 10) {
+      const t = svgEl('text', { x: x + bw/2, y: pad.t + ih + 16, 'text-anchor': 'middle', class: 'axis-t' });
+      t.textContent = mo.m === 1 ? `Jan ’${String(mo.y).slice(2)}` : M_NAMES[mo.m-1];
+      svg.appendChild(t);
+    }
+    // hover target (full column)
+    const hit = svgEl('rect', { x: pad.l + slot*i, y: pad.t, width: slot, height: ih, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => { showTT(ttFn(mo, i), ev); });
+    hit.addEventListener('mouseleave', hideTT);
+    svg.appendChild(hit);
+  });
+  box.appendChild(svg);
+}
+
+function topSource(mo) {
+  let best = null, bn = 0;
+  for (const k of SRC_KEYS) if (mo.src[k] > bn) { bn = mo.src[k]; best = k; }
+  return best ? `${best} (${bn})` : '—';
+}
+
+function renderMonthly() {
+  monthlyBars('chart-monthly',
+    mo => mo.n,
+    (mo, i, vals) => mo.n === Math.max(...vals) || mo.ym === '2025-10' || i === months.length - 1 || mo.ym === '2025-01',
+    (mo, i) => {
+      const prev = i > 0 ? months[i-1] : null;
+      const mom = prev && prev.n > 0 ? pct(mo.n, prev.n) : '—';
+      return `<div class="tt-title">${M_NAMES[mo.m-1]} ${mo.y}${mo.ym==='2026-07' ? ' · partial' : ''}</div>
+        <div class="tt-row"><span>New members</span><span>${mo.n}</span></div>
+        <div class="tt-row"><span>vs prior month</span><span>${mom}</span></div>
+        <div class="tt-row"><span>First-year revenue</span><span>${fmtK(mo.rev)}</span></div>
+        <div class="tt-row"><span>Cash upfront</span><span>${fmtK(mo.cash)}</span></div>
+        <div class="tt-row"><span>MRR added</span><span>${fmtK(mo.mrr)}/mo</span></div>
+        <div class="tt-row"><span>Top source</span><span>${topSource(mo)}</span></div>`;
+    },
+    { height: 250, aria: 'New members per month, January 2025 through July 2026', tickFmt: v => Math.round(v), gridSteps: 3 });
+
+  monthlyBars('chart-revenue',
+    mo => mo.rev,
+    (mo, i, vals) => mo.rev === Math.max(...vals) || i === months.length - 1,
+    (mo) => `<div class="tt-title">${M_NAMES[mo.m-1]} ${mo.y}${mo.ym==='2026-07' ? ' · partial' : ''}</div>
+      <div class="tt-row"><span>First-year revenue</span><span>${fmt$(mo.rev)}</span></div>
+      <div class="tt-row"><span>New members</span><span>${mo.n}</span></div>
+      <div class="tt-row"><span>Avg per member</span><span>${mo.n ? fmt$(mo.rev/mo.n) : '—'}</span></div>`,
+    { height: 220, aria: 'First-year revenue booked per month', tickFmt: (v, short) => fmtK(v), gridSteps: 3, padL: 52 });
+
+  legend('legend-monthly', [
+    { label: '2025', color: cssVar('--s1') },
+    { label: '2026', color: cssVar('--s2') },
+  ]);
+}
+
+/* ---------- YoY grouped bars ---------- */
+function renderYoY() {
+  const box = document.getElementById('chart-yoy');
+  box.innerHTML = '';
+  const W = Math.max(box.clientWidth, 420), H = 260;
+  const pad = { l: 30, r: 8, t: 30, b: 30 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'New members by month, January to July, 2025 versus 2026' });
+
+  const rows = [];
+  for (let m = 1; m <= 7; m++) {
+    rows.push({ m, a: months.find(x => x.y===2025 && x.m===m), b: months.find(x => x.y===2026 && x.m===m) });
+  }
+  const maxV = Math.max(...rows.flatMap(r => [r.a.n, r.b.n])) * 1.2;
+  const groupW = iw / 7;
+  const bw = Math.min((groupW - 14) / 2 - 1, 26);
+
+  for (let i = 1; i <= 3; i++) {
+    const v = maxV/1.2 * i/3;
+    const y = pad.t + ih - (v/maxV)*ih;
+    svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: y, y2: y, stroke: cssVar('--grid'), 'stroke-width': 1 }));
+    const t = svgEl('text', { x: pad.l-6, y: y+3.5, 'text-anchor': 'end', class: 'axis-t' });
+    t.textContent = Math.round(v); svg.appendChild(t);
+  }
+  svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: pad.t+ih, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1 }));
+
+  rows.forEach((r, i) => {
+    const cx = pad.l + groupW*i + groupW/2;
+    const xA = cx - bw - 1, xB = cx + 1;
+    const hA = (r.a.n/maxV)*ih, hB = (r.b.n/maxV)*ih;
+    svg.appendChild(svgEl('path', { d: roundedTopBar(xA, pad.t+ih-hA, bw, hA, 4), fill: cssVar('--s1') }));
+    svg.appendChild(svgEl('path', { d: roundedTopBar(xB, pad.t+ih-hB, bw, hB, 4), fill: cssVar('--s2') }));
+    // delta label above group
+    const d = svgEl('text', { x: cx, y: pad.t + ih - Math.max(hA,hB) - 8, 'text-anchor': 'middle', class: 'dlabel' });
+    d.setAttribute('fill', r.b.n >= r.a.n ? cssVar('--good') : cssVar('--ink-2')); d.setAttribute('font-weight', '700');
+    d.textContent = pct(r.b.n, r.a.n);
+    svg.appendChild(d);
+    const t = svgEl('text', { x: cx, y: pad.t+ih+16, 'text-anchor': 'middle', class: 'axis-t' });
+    t.textContent = M_NAMES[r.m-1] + (r.m===7 ? '*' : ''); svg.appendChild(t);
+
+    const hit = svgEl('rect', { x: pad.l+groupW*i, y: pad.t, width: groupW, height: ih, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => showTT(
+      `<div class="tt-title">${M_NAMES[r.m-1]}${r.m===7 ? ' (Jul ’26 partial)' : ''}</div>
+       <div class="tt-row"><span>2025</span><span>${r.a.n}</span></div>
+       <div class="tt-row"><span>2026</span><span>${r.b.n}</span></div>
+       <div class="tt-row"><span>Change</span><span>${pct(r.b.n, r.a.n)}</span></div>`, ev));
+    hit.addEventListener('mouseleave', hideTT);
+    svg.appendChild(hit);
+  });
+  box.appendChild(svg);
+  legend('legend-yoy', [
+    { label: '2025', color: cssVar('--s1') },
+    { label: '2026', color: cssVar('--s2') },
+  ]);
+}
+
+/* ---------- 100% stacked share bars (sources / plans) ---------- */
+function renderShare(containerId, legendId, keys, colors, getCounts, getOther, aria) {
+  const box = document.getElementById(containerId);
+  box.innerHTML = '';
+  const W = Math.max(box.clientWidth, 560);
+  const rowH = 40, gapY = 18, labelW = 84;
+  const H = 2*rowH + gapY + 16;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': aria });
+  const iw = W - labelW - 8;
+
+  [['2025', DATA.years['2025'], 0], ['2026 YTD', DATA.years['2026'], 1]].forEach(([lab, yr, ri]) => {
+    const y0 = 8 + ri*(rowH+gapY);
+    const counts = getCounts(yr);
+    const other = getOther(yr);
+    const total = counts.reduce((s,v)=>s+v,0) + other;
+    const t = svgEl('text', { x: 0, y: y0 + rowH/2 + 4, class: 'row-label' });
+    t.textContent = lab; svg.appendChild(t);
+
+    let x = labelW;
+    const segs = keys.map((k,i)=>({k, v: counts[i], c: colors[i]})).concat(other ? [{k:'Other / unknown', v: other, c: cssVar('--neutral-seg')}] : []);
+    segs.forEach(seg => {
+      if (!seg.v) return;
+      const w = seg.v/total * iw;
+      const rect = svgEl('rect', { x: x, y: y0, width: Math.max(w-2, 1), height: rowH, rx: 4, fill: seg.c });
+      const share = Math.round(seg.v/total*100);
+      rect.addEventListener('mousemove', ev => showTT(
+        `<div class="tt-title">${seg.k} — ${lab}</div>
+         <div class="tt-row"><span>Members</span><span>${seg.v}</span></div>
+         <div class="tt-row"><span>Share</span><span>${share}%</span></div>`, ev));
+      rect.addEventListener('mouseleave', hideTT);
+      svg.appendChild(rect);
+      if (w > 44) {
+        const tl = svgEl('text', { x: x + (w-2)/2, y: y0 + rowH/2 + 4, 'text-anchor': 'middle', class: 'seg-label' });
+        if (seg.c === cssVar('--neutral-seg')) tl.setAttribute('fill', cssVar('--ink'));
+        tl.textContent = share + '%';
+        svg.appendChild(tl);
+      }
+      x += w;
+    });
+  });
+  box.appendChild(svg);
+  const hasOther = getOther(DATA.years['2025']) + getOther(DATA.years['2026']) > 0;
+  legend(legendId, keys.map((k,i)=>({label:k, color: colors[i]})).concat(hasOther ? [{label:'Other / unknown', color: cssVar('--neutral-seg')}] : []));
+}
+
+function renderShares() {
+  const srcColors = [cssVar('--s1'), cssVar('--s2'), cssVar('--s3'), cssVar('--s4'), cssVar('--s5'), cssVar('--s6')];
+  renderShare('chart-src', 'legend-src', SRC_KEYS, srcColors,
+    yr => SRC_KEYS.map(k => yr.src[k]), yr => yr.oth,
+    'Lead source share of new members, 2025 versus 2026');
+  const plnColors = [cssVar('--s1'), cssVar('--s2'), cssVar('--s3'), cssVar('--s4')];
+  renderShare('chart-plan', 'legend-plan', PLN_KEYS, plnColors,
+    yr => PLN_KEYS.map(k => yr.pln[k]), () => 0,
+    'Plan mix of new members, 2025 versus 2026');
+}
+
+/* ---------- insights ---------- */
+(function insights() {
+  const el = document.getElementById('insights');
+  const items = [
+    { h: 'Three of the four pacing numbers are compounding', p: `Through July 21, 2026 is up <span class="num">+91%</span> on members (103 vs 54), <span class="num">+96%</span> on potential first-year revenue ($643K vs $328K), and <span class="num">+97%</span> on MRR added ($53.6K/mo vs $27.2K/mo) versus the same period of 2025. 2026 has already reached <span class="num">87%</span> of 2025’s full-year member count with five-plus months to go.` },
+    { h: 'Cash upfront is the lagging number — by design', p: `Cash collected at signup is up only <span class="num">+25%</span> ($389K vs $311K) — far behind the other three. The cause is the plan-mix shift: quarterly members pay ~$1,000–2,000 at signup where annual members paid ~$6,500–7,500. Cash per new member fell from <span class="num">$4,896</span> to <span class="num">$3,777</span>. Booked growth is real, but it converts to cash only as quarterly renewals hit — worth tracking renewal collections as a fifth number.` },
+    { h: 'The monthly baseline has shifted up', p: `2025 averaged <span class="num">8.3</span> new members/month in Jan–Jul and peaked at <span class="num">18</span> in October. 2026 is averaging <span class="num">~15</span>/month, with a record <span class="num">23</span> in March (Inspire event + a batch of second seats) and no month below 10. At the current YoY pace, 2026 lands around <span class="num">210–230</span> members vs 119 — if 2025’s stronger second half repeats.` },
+    { h: 'Channel mix diversified sharply', p: `Pure referrals fell from <span class="num">41%</span> of 2025 signups to <span class="num">18%</span> in 2026 — but event-touched deals (Event + Referral&#8201;+&#8201;Event) grew to <span class="num">42%</span>, and the new second-seat motion added <span class="num">16</span> members (16%) from existing member companies. Facebook Ads, which drove the Oct–Nov 2025 spike (8 members), has faded to 6 in all of 2026 — worth a deliberate decision to re-invest or drop.` },
+    { h: 'Plan mix moved to quarterly — watch retention', p: `Annual plans fell from <span class="num">62%</span> of signups to <span class="num">32%</span>, while quarterly grew from <span class="num">28%</span> to <span class="num">47%</span> (driven by the “$1,000 off first quarter” promo). Average first-year value held up — <span class="num">$6,157 → $6,245</span> — so pricing is intact. The trade-off shows up directly in the cash-upfront gap above: more of 2026’s booked revenue depends on quarterly renewals actually happening.` },
+    { h: 'Events are the engine to protect', p: `The biggest months in the data — Oct 2025, Mar 2026, Apr 2026 — all coincide with event pushes (Prosper, Inspire, Operator Room) plus the offers attached to them. Combined Event and Referral+Event sourcing accounts for <span class="num">43</span> of 103 members in 2026. July is already at <span class="num">14</span> members in three weeks — ahead of July 2025’s full-month 13 — with the softest 2026 stretch (May–June) reading as normal post-event digestion.` },
+  ];
+  el.innerHTML = items.map(i => `<div class="insight"><h4>${i.h}</h4><p>${i.p}</p></div>`).join('');
+})();
+
+/* ---------- table ---------- */
+(function table() {
+  const el = document.getElementById('table');
+  let rows = '';
+  let prev = null;
+  months.forEach(mo => {
+    const mom = prev && prev.n > 0 ? pct(mo.n, prev.n) : '';
+    const yoyMo = mo.y === 2026 ? months.find(x => x.y===2025 && x.m===mo.m) : null;
+    const yoy = yoyMo ? pct(mo.n, yoyMo.n) : '';
+    rows += `<tr${mo.ym==='2026-01' ? ' class="yr-divider"' : ''}>
+      <td>${M_NAMES[mo.m-1]} ${mo.y}${mo.ym==='2026-07' ? ' *' : ''}</td>
+      <td>${mo.n}</td>
+      <td class="mono-muted">${mom}</td>
+      <td>${yoy ? `<span class="${mo.n >= (yoyMo?yoyMo.n:0) ? 'pos' : ''}">${yoy}</span>` : '<span class="mono-muted">—</span>'}</td>
+      <td>${fmt$(mo.cash)}</td>
+      <td>${fmt$(mo.mrr)}</td>
+      <td>${fmt$(mo.rev)}</td>
+      <td>${mo.n ? fmt$(mo.rev/mo.n) : '—'}</td>
+      <td style="text-align:left">${topSource(mo)}</td>
+    </tr>`;
+    prev = mo;
+  });
+  el.innerHTML = `<table>
+    <thead><tr><th>Month</th><th>New members</th><th>MoM</th><th>YoY</th><th>Cash upfront</th><th>MRR added</th><th>First-yr revenue</th><th>Avg / member</th><th style="text-align:left">Top source</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tbody>
+      <tr class="yr-divider"><td><strong>2025 total</strong></td><td><strong>${y25.n}</strong></td><td></td><td></td><td><strong>${fmt$(y25.cash)}</strong></td><td><strong>${fmt$(y25.mrr)}</strong></td><td><strong>${fmt$(y25.rev)}</strong></td><td><strong>${fmt$(y25.avg)}</strong></td><td style="text-align:left">Referral (49)</td></tr>
+      <tr><td><strong>2026 YTD *</strong></td><td><strong>${y26.n}</strong></td><td></td><td><span class="pos"><strong>+91%</strong></span></td><td><strong>${fmt$(y26.cash)}</strong></td><td><strong>${fmt$(y26.mrr)}</strong></td><td><strong>${fmt$(y26.rev)}</strong></td><td><strong>${fmt$(y26.avg)}</strong></td><td style="text-align:left">Event (22)</td></tr>
+    </tbody>
+  </table>`;
+})();
+
+/* ---------- render + re-render on resize / theme change ---------- */
+function renderAll() { renderMonthly(); renderPacing(); renderYoY(); renderShares(); }
+renderAll();
+let rzT;
+window.addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(renderAll, 120); });
+new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+</script>
+
+</body>
+</html>
