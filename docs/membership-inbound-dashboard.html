@@ -173,6 +173,14 @@
   .insight p { margin: 0; color: var(--ink-2); font-size: 13px; }
   .insight .num { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
 
+  .pace-head { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 0; }
+  .pace-value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+  .pace-badge {
+    font-size: 12px; font-weight: 700; color: var(--good);
+    border: 1px solid currentColor; border-radius: 999px; padding: 1px 9px;
+  }
+  .pace-ref { font-size: 12px; color: var(--muted); margin: 2px 0 10px; }
+
   .table-scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; font-size: 13px; }
   th, td { padding: 7px 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -211,12 +219,20 @@
 
   <section>
     <div class="sec-head">
+      <h2>The four pacing numbers</h2>
+      <p>The four aspects of growth we pace, year over year: members in, cash collected upfront, MRR added, and potential first-year (annualized) revenue. Each chart is the cumulative running total through the year — 2025 in blue, 2026 in orange. Growth badges compare 2026 YTD against the same period of 2025 (through Jul 21).</p>
+    </div>
+    <div class="grid-2" id="pacing"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
       <h2>Month-over-month pace</h2>
       <p>New paid members per month across the full 19 months of data. 2025 built from a slow start to an October peak; 2026 has run at a structurally higher level since February.</p>
     </div>
     <div class="card">
       <h3>New members per month</h3>
-      <p class="card-sub">Count of membership payments by month paid · July 2026 is partial (through Jul 17)</p>
+      <p class="card-sub">Count of membership payments by month paid · July 2026 is partial (through Jul 21)</p>
       <div class="legend" id="legend-monthly"></div>
       <div class="chart-box" id="chart-monthly"></div>
     </div>
@@ -232,19 +248,11 @@
       <h2>Year over year</h2>
       <p>January–July 2026 against the same months of 2025 — every single month is up, and the cumulative gap has widened all year.</p>
     </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>New members by month, 2025 vs 2026</h3>
-        <p class="card-sub">Jan–Jul of each year · label shows YoY change</p>
-        <div class="legend" id="legend-yoy"></div>
-        <div class="chart-box" id="chart-yoy"></div>
-      </div>
-      <div class="card">
-        <h3>Cumulative new members through the year</h3>
-        <p class="card-sub">Running total by month · 2026 through Jul 17</p>
-        <div class="legend" id="legend-cume"></div>
-        <div class="chart-box" id="chart-cume"></div>
-      </div>
+    <div class="card">
+      <h3>New members by month, 2025 vs 2026</h3>
+      <p class="card-sub">Jan–Jul of each year · label shows YoY change · July 2026 has 10 selling days left</p>
+      <div class="legend" id="legend-yoy"></div>
+      <div class="chart-box" id="chart-yoy"></div>
     </div>
   </section>
 
@@ -281,7 +289,7 @@
     </div>
     <div class="card">
       <div class="table-scroll" id="table"></div>
-      <p class="footnote">Source: New Membership Payments Tracker (sheets “2025 Paid” and “2026”), member-level records grouped by month of membership payment. First-year revenue uses the tracker’s “Potential First Year Rev” column. July 2026 includes payments through July 17, 2026. Lead sources are normalized (e.g. “Website Application - Referral” → Referral); 4 members with no recorded source are shown as Other.</p>
+      <p class="footnote">Source: New Membership Payments Tracker — sheets “2025 Paid”, “2026”, and “Jul 2026” (the July tab carries three payments not yet on the master sheet), member-level records grouped by month of membership payment. Potential first-year revenue uses the tracker’s “Potential First Year Rev” column; cash upfront uses the “Paid” column (amount actually collected at signup); MRR uses the tracker’s MRR columns (first-year revenue ÷ 12). Data runs through July 21, 2026. Lead sources are normalized (e.g. “Website Application - Referral” → Referral); 4 members with no recorded source are shown as Other.</p>
     </div>
   </section>
 </div>
@@ -289,7 +297,7 @@
 <div id="tooltip"></div>
 
 <script>
-const DATA = {"months":[{"ym":"2025-01","y":2025,"m":1,"n":4,"rev":23671,"disc":3000,"src":{"Referral":3,"Event":1,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":4,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-02","y":2025,"m":2,"n":6,"rev":42775,"disc":1890,"src":{"Referral":6,"Event":0,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-03","y":2025,"m":3,"n":6,"rev":41648,"disc":1000,"src":{"Referral":3,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":1,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-04","y":2025,"m":4,"n":9,"rev":63473,"disc":4000,"src":{"Referral":4,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":9,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-05","y":2025,"m":5,"n":10,"rev":52453,"disc":11000,"src":{"Referral":7,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":8,"Quarterly":0,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-06","y":2025,"m":6,"n":10,"rev":60402,"disc":15000,"src":{"Referral":1,"Event":6,"Referral + Event":0,"Website Application":2,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":4,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-07","y":2025,"m":7,"n":13,"rev":67408,"disc":0,"src":{"Referral":3,"Event":8,"Referral + Event":0,"Website Application":1,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":3,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-08","y":2025,"m":8,"n":11,"rev":58359,"disc":26500,"src":{"Referral":4,"Event":2,"Referral + Event":0,"Website Application":2,"Facebook Ads":2,"Second Seat":0},"oth":1,"pln":{"Annual":9,"Quarterly":0,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-09","y":2025,"m":9,"n":14,"rev":85869,"disc":11002,"src":{"Referral":8,"Event":2,"Referral + Event":0,"Website Application":3,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":7,"Quarterly":5,"Second Seat":2,"Emerging Market":0}},{"ym":"2025-10","y":2025,"m":10,"n":18,"rev":119342,"disc":16000,"src":{"Referral":8,"Event":3,"Referral + Event":1,"Website Application":1,"Facebook Ads":5,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":7,"Second Seat":1,"Emerging Market":0}},{"ym":"2025-11","y":2025,"m":11,"n":7,"rev":45926,"disc":6375,"src":{"Referral":1,"Event":0,"Referral + Event":2,"Website Application":1,"Facebook Ads":3,"Second Seat":0},"oth":0,"pln":{"Annual":2,"Quarterly":3,"Second Seat":1,"Emerging Market":1}},{"ym":"2025-12","y":2025,"m":12,"n":11,"rev":71410,"disc":7375,"src":{"Referral":1,"Event":1,"Referral + Event":2,"Website Application":6,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":3,"Second Seat":2,"Emerging Market":1}},{"ym":"2026-01","y":2026,"m":1,"n":10,"rev":60406,"disc":9980,"src":{"Referral":1,"Event":4,"Referral + Event":1,"Website Application":0,"Facebook Ads":1,"Second Seat":3},"oth":0,"pln":{"Annual":3,"Quarterly":4,"Second Seat":3,"Emerging Market":0}},{"ym":"2026-02","y":2026,"m":2,"n":14,"rev":92018,"disc":16775,"src":{"Referral":4,"Event":2,"Referral + Event":3,"Website Application":3,"Facebook Ads":1,"Second Seat":1},"oth":0,"pln":{"Annual":3,"Quarterly":9,"Second Seat":1,"Emerging Market":1}},{"ym":"2026-03","y":2026,"m":3,"n":23,"rev":115062,"disc":31285,"src":{"Referral":4,"Event":2,"Referral + Event":7,"Website Application":0,"Facebook Ads":2,"Second Seat":8},"oth":0,"pln":{"Annual":8,"Quarterly":4,"Second Seat":8,"Emerging Market":3}},{"ym":"2026-04","y":2026,"m":4,"n":18,"rev":116760,"disc":8515,"src":{"Referral":2,"Event":9,"Referral + Event":4,"Website Application":2,"Facebook Ads":0,"Second Seat":1},"oth":0,"pln":{"Annual":6,"Quarterly":10,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-05","y":2026,"m":5,"n":12,"rev":84858,"disc":1000,"src":{"Referral":3,"Event":0,"Referral + Event":4,"Website Application":3,"Facebook Ads":0,"Second Seat":2},"oth":0,"pln":{"Annual":4,"Quarterly":6,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-06","y":2026,"m":6,"n":10,"rev":69351,"disc":9000,"src":{"Referral":3,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":1,"Second Seat":0},"oth":1,"pln":{"Annual":3,"Quarterly":7,"Second Seat":0,"Emerging Market":0}},{"ym":"2026-07","y":2026,"m":7,"n":11,"rev":80848,"disc":5000,"src":{"Referral":1,"Event":2,"Referral + Event":1,"Website Application":5,"Facebook Ads":0,"Second Seat":0},"oth":2,"pln":{"Annual":4,"Quarterly":7,"Second Seat":0,"Emerging Market":0}}],"years":{"2025":{"n":119,"rev":732736,"n_j7":58,"rev_j7":351830,"avg":6157,"src":{"Referral":49,"Event":30,"Referral + Event":5,"Website Application":20,"Facebook Ads":14,"Second Seat":0},"oth":1,"pln":{"Annual":81,"Quarterly":26,"Second Seat":6,"Emerging Market":6},"disc_pct":12.2},"2026":{"n":98,"rev":619303,"n_j7":98,"rev_j7":619303,"avg":6319,"src":{"Referral":18,"Event":22,"Referral + Event":20,"Website Application":15,"Facebook Ads":5,"Second Seat":15},"oth":3,"pln":{"Annual":31,"Quarterly":47,"Second Seat":16,"Emerging Market":4},"disc_pct":11.6},"matched25":{"n":52,"rev":317865}},"asof":"2026-07-17"};
+const DATA = {"months":[{"ym":"2025-01","y":2025,"m":1,"n":4,"rev":23671,"cash":17701,"mrr":1973,"src":{"Referral":3,"Event":1,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":4,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-02","y":2025,"m":2,"n":6,"rev":42775,"cash":36915,"mrr":3565,"src":{"Referral":6,"Event":0,"Referral + Event":0,"Website Application":0,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-03","y":2025,"m":3,"n":6,"rev":41648,"cash":27114,"mrr":3387,"src":{"Referral":3,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":1,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-04","y":2025,"m":4,"n":9,"rev":63473,"cash":58941,"mrr":5289,"src":{"Referral":4,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":9,"Quarterly":0,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-05","y":2025,"m":5,"n":10,"rev":52453,"cash":56273,"mrr":4371,"src":{"Referral":7,"Event":2,"Referral + Event":0,"Website Application":1,"Facebook Ads":0,"Second Seat":0},"oth":0,"pln":{"Annual":7,"Quarterly":1,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-06","y":2025,"m":6,"n":10,"rev":60402,"cash":75402,"mrr":5034,"src":{"Referral":1,"Event":6,"Referral + Event":0,"Website Application":2,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":6,"Quarterly":4,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-07","y":2025,"m":7,"n":13,"rev":67408,"cash":57073,"mrr":5617,"src":{"Referral":3,"Event":8,"Referral + Event":0,"Website Application":1,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":3,"Second Seat":0,"Emerging Market":0}},{"ym":"2025-08","y":2025,"m":8,"n":11,"rev":58359,"cash":38952,"mrr":4863,"src":{"Referral":4,"Event":2,"Referral + Event":0,"Website Application":2,"Facebook Ads":2,"Second Seat":0},"oth":1,"pln":{"Annual":3,"Quarterly":6,"Second Seat":0,"Emerging Market":2}},{"ym":"2025-09","y":2025,"m":9,"n":14,"rev":85869,"cash":55944,"mrr":7069,"src":{"Referral":8,"Event":2,"Referral + Event":0,"Website Application":3,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":7,"Quarterly":5,"Second Seat":2,"Emerging Market":0}},{"ym":"2025-10","y":2025,"m":10,"n":18,"rev":119342,"cash":76930,"mrr":9902,"src":{"Referral":8,"Event":3,"Referral + Event":1,"Website Application":1,"Facebook Ads":5,"Second Seat":0},"oth":0,"pln":{"Annual":10,"Quarterly":7,"Second Seat":1,"Emerging Market":0}},{"ym":"2025-11","y":2025,"m":11,"n":7,"rev":45926,"cash":27971,"mrr":3827,"src":{"Referral":1,"Event":0,"Referral + Event":2,"Website Application":1,"Facebook Ads":3,"Second Seat":0},"oth":0,"pln":{"Annual":2,"Quarterly":3,"Second Seat":1,"Emerging Market":1}},{"ym":"2025-12","y":2025,"m":12,"n":11,"rev":71410,"cash":53457,"mrr":5951,"src":{"Referral":1,"Event":1,"Referral + Event":2,"Website Application":6,"Facebook Ads":1,"Second Seat":0},"oth":0,"pln":{"Annual":5,"Quarterly":3,"Second Seat":2,"Emerging Market":1}},{"ym":"2026-01","y":2026,"m":1,"n":10,"rev":60406,"cash":36466,"mrr":5034,"src":{"Referral":1,"Event":4,"Referral + Event":1,"Website Application":0,"Facebook Ads":1,"Second Seat":3},"oth":0,"pln":{"Annual":3,"Quarterly":4,"Second Seat":3,"Emerging Market":0}},{"ym":"2026-02","y":2026,"m":2,"n":14,"rev":92018,"cash":42938,"mrr":7668,"src":{"Referral":4,"Event":2,"Referral + Event":3,"Website Application":3,"Facebook Ads":1,"Second Seat":1},"oth":0,"pln":{"Annual":3,"Quarterly":9,"Second Seat":1,"Emerging Market":1}},{"ym":"2026-03","y":2026,"m":3,"n":23,"rev":115062,"cash":104412,"mrr":9588,"src":{"Referral":4,"Event":2,"Referral + Event":7,"Website Application":0,"Facebook Ads":2,"Second Seat":8},"oth":0,"pln":{"Annual":8,"Quarterly":4,"Second Seat":8,"Emerging Market":3}},{"ym":"2026-04","y":2026,"m":4,"n":18,"rev":116760,"cash":60425,"mrr":9730,"src":{"Referral":2,"Event":9,"Referral + Event":4,"Website Application":2,"Facebook Ads":0,"Second Seat":1},"oth":0,"pln":{"Annual":6,"Quarterly":10,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-05","y":2026,"m":5,"n":12,"rev":84858,"cash":48948,"mrr":7072,"src":{"Referral":3,"Event":0,"Referral + Event":4,"Website Application":3,"Facebook Ads":0,"Second Seat":2},"oth":0,"pln":{"Annual":4,"Quarterly":6,"Second Seat":2,"Emerging Market":0}},{"ym":"2026-06","y":2026,"m":6,"n":12,"rev":82328,"cash":41448,"mrr":6861,"src":{"Referral":4,"Event":3,"Referral + Event":0,"Website Application":2,"Facebook Ads":2,"Second Seat":0},"oth":1,"pln":{"Annual":4,"Quarterly":8,"Second Seat":0,"Emerging Market":0}},{"ym":"2026-07","y":2026,"m":7,"n":14,"rev":91837,"cash":54442,"mrr":7653,"src":{"Referral":1,"Event":2,"Referral + Event":2,"Website Application":6,"Facebook Ads":0,"Second Seat":1},"oth":2,"pln":{"Annual":5,"Quarterly":7,"Second Seat":1,"Emerging Market":1}}],"years":{"2025":{"n":119,"rev":732736,"cash":582673,"mrr":60849,"avg":6157,"src":{"Referral":49,"Event":30,"Referral + Event":5,"Website Application":20,"Facebook Ads":14,"Second Seat":0},"oth":1,"pln":{"Annual":74,"Quarterly":33,"Second Seat":6,"Emerging Market":6},"matched":{"n":54,"rev":327859,"cash":311433,"mrr":27238}},"2026":{"n":103,"rev":643269,"cash":389079,"mrr":53606,"avg":6245,"src":{"Referral":19,"Event":22,"Referral + Event":21,"Website Application":16,"Facebook Ads":6,"Second Seat":16},"oth":3,"pln":{"Annual":33,"Quarterly":48,"Second Seat":17,"Emerging Market":5},"matched":{"n":103,"rev":643269,"cash":389079,"mrr":53606}}},"asof":"2026-07-21"};
 
 const M_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const SRC_KEYS = ['Referral','Event','Referral + Event','Website Application','Facebook Ads','Second Seat'];
@@ -332,11 +340,11 @@ function legend(elId, items) {
 }
 
 const months = DATA.months;
-const y25 = DATA.years['2025'], y26 = DATA.years['2026'], m25 = DATA.years['matched25'];
+const y25 = DATA.years['2025'], y26 = DATA.years['2026'], m25 = DATA.years['2025'].matched;
 const TOTAL = { n: y25.n + y26.n, rev: y25.rev + y26.rev };
 
 document.getElementById('asof').textContent =
-  `Data through July 17, 2026 · ${TOTAL.n} new members and ${fmt$(TOTAL.rev)} in booked first-year revenue since January 2025`;
+  `Data through July 21, 2026 · ${TOTAL.n} new members and ${fmt$(TOTAL.rev)} in booked first-year revenue since January 2025`;
 
 /* ---------- KPI tiles ---------- */
 (function kpis() {
@@ -344,8 +352,6 @@ document.getElementById('asof').textContent =
   const tiles = [
     { label: '2026 new members YTD', value: y26.n,
       delta: `<span class="up">+${Math.round((y26.n - m25.n)/m25.n*100)}%</span> vs same period 2025 (${m25.n})` },
-    { label: '2026 first-year revenue YTD', value: fmtK(y26.rev),
-      delta: `<span class="up">+${Math.round((y26.rev - m25.rev)/m25.rev*100)}%</span> vs same period 2025 (${fmtK(m25.rev)})` },
     { label: 'Avg first-year value, 2026', value: fmt$(y26.avg),
       delta: `2025 average: ${fmt$(y25.avg)}` },
     { label: 'Best month on record', value: '23',
@@ -360,6 +366,100 @@ document.getElementById('asof').textContent =
       <div class="delta">${t.delta}</div>
     </div>`).join('');
 })();
+
+/* ---------- pacing scorecard: four cumulative metrics ---------- */
+const PACE_METRICS = [
+  { key: 'n',    title: 'New members in',                 fmt: v => Math.round(v).toLocaleString('en-US'), tickFmt: v => Math.round(v),
+    sub: 'Count of new membership payments' },
+  { key: 'cash', title: 'Cash collected upfront',         fmt: fmt$, tickFmt: fmtK,
+    sub: 'Amount actually paid at signup (“Paid” column)' },
+  { key: 'mrr',  title: 'MRR added',                      fmt: v => fmt$(v) + '/mo', tickFmt: fmtK,
+    sub: 'Monthly recurring revenue added by new members' },
+  { key: 'rev',  title: 'Potential first-year revenue',   fmt: fmt$, tickFmt: fmtK,
+    sub: 'Annualized value of new memberships after discounts' },
+];
+
+function renderPacing() {
+  const wrap = document.getElementById('pacing');
+  wrap.innerHTML = PACE_METRICS.map((mt, i) => `
+    <div class="card">
+      <h3>${mt.title}</h3>
+      <p class="card-sub">${mt.sub}</p>
+      <div class="pace-head">
+        <span class="pace-value">${mt.fmt(y26[mt.key])}</span>
+        <span class="pace-badge">+${Math.round((y26[mt.key] - m25[mt.key])/m25[mt.key]*100)}% YoY</span>
+      </div>
+      <p class="pace-ref">2025 same period: ${mt.fmt(m25[mt.key])} · 2025 full year: ${mt.fmt(y25[mt.key])}</p>
+      <div class="legend" id="legend-pace-${mt.key}"></div>
+      <div class="chart-box" id="chart-pace-${mt.key}"></div>
+    </div>`).join('');
+  PACE_METRICS.forEach(mt => cumeChart('chart-pace-' + mt.key, mo => mo[mt.key], mt));
+}
+
+function cumeChart(containerId, valueFn, mt) {
+  const box = document.getElementById(containerId);
+  box.innerHTML = '';
+  const W = Math.max(box.clientWidth, 380), H = 210;
+  const pad = { l: 48, r: 54, t: 12, b: 28 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Cumulative ${mt.title} by month, 2025 versus 2026` });
+
+  const c25 = [], c26 = [];
+  let a = 0, b = 0;
+  for (let m = 1; m <= 12; m++) {
+    const mo = months.find(x => x.y===2025 && x.m===m); a += valueFn(mo); c25.push(a);
+    const mo6 = months.find(x => x.y===2026 && x.m===m);
+    if (mo6) { b += valueFn(mo6); c26.push(b); }
+  }
+  const maxV = Math.max(c25[11], c26[c26.length-1]) * 1.08;
+  const xAt = m => pad.l + (m-1)/11 * iw;
+  const yAt = v => pad.t + ih - (v/maxV)*ih;
+
+  for (let i = 1; i <= 3; i++) {
+    const v = maxV/1.08 * i/3;
+    svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: yAt(v), y2: yAt(v), stroke: cssVar('--grid'), 'stroke-width': 1 }));
+    const t = svgEl('text', { x: pad.l-6, y: yAt(v)+3.5, 'text-anchor': 'end', class: 'axis-t' });
+    t.textContent = mt.tickFmt(v); svg.appendChild(t);
+  }
+  svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: pad.t+ih, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1 }));
+  [1,4,7,10,12].forEach(m => {
+    const t = svgEl('text', { x: xAt(m), y: pad.t+ih+16, 'text-anchor': 'middle', class: 'axis-t' });
+    t.textContent = M_NAMES[m-1]; svg.appendChild(t);
+  });
+
+  const pathOf = arr => arr.map((v,i) => (i?'L':'M') + xAt(i+1) + ',' + yAt(v)).join(' ');
+  svg.appendChild(svgEl('path', { d: pathOf(c25), fill: 'none', stroke: cssVar('--s1'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
+  svg.appendChild(svgEl('path', { d: pathOf(c26), fill: 'none', stroke: cssVar('--s2'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
+  svg.appendChild(svgEl('circle', { cx: xAt(12), cy: yAt(c25[11]), r: 4, fill: cssVar('--s1'), stroke: cssVar('--surface'), 'stroke-width': 2 }));
+  svg.appendChild(svgEl('circle', { cx: xAt(7), cy: yAt(c26[6]), r: 4, fill: cssVar('--s2'), stroke: cssVar('--surface'), 'stroke-width': 2 }));
+  const l25 = svgEl('text', { x: xAt(12)+7, y: yAt(c25[11])+4, class: 'end-label', fill: cssVar('--s1') });
+  l25.textContent = mt.tickFmt(c25[11]); svg.appendChild(l25);
+  const l26 = svgEl('text', { x: xAt(7)+7, y: yAt(c26[6])+4, class: 'end-label', fill: cssVar('--s2') });
+  l26.textContent = mt.tickFmt(c26[6]); svg.appendChild(l26);
+
+  const cross = svgEl('line', { y1: pad.t, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1, 'stroke-dasharray': '3 3', visibility: 'hidden' });
+  svg.appendChild(cross);
+  const hit = svgEl('rect', { x: pad.l, y: pad.t, width: iw, height: ih, fill: 'transparent' });
+  hit.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect();
+    const sx = (ev.clientX - r.left) * (W / r.width);
+    const m = Math.max(1, Math.min(12, Math.round((sx - pad.l)/iw*11 + 1)));
+    cross.setAttribute('x1', xAt(m)); cross.setAttribute('x2', xAt(m));
+    cross.setAttribute('visibility', 'visible');
+    const v26 = m <= 7 ? c26[m-1] : null;
+    showTT(`<div class="tt-title">${mt.title} · through ${M_NAMES[m-1]}</div>
+      <div class="tt-row"><span>2025</span><span>${mt.fmt(c25[m-1])}</span></div>
+      ${v26 !== null ? `<div class="tt-row"><span>2026</span><span>${mt.fmt(v26)}</span></div>
+      <div class="tt-row"><span>YoY</span><span>${pct(v26, c25[m-1])}</span></div>` : ''}`, ev);
+  });
+  hit.addEventListener('mouseleave', () => { cross.setAttribute('visibility', 'hidden'); hideTT(); });
+  svg.appendChild(hit);
+  box.appendChild(svg);
+  legend('legend-pace-' + mt.key, [
+    { label: '2025 (full year)', color: cssVar('--s1') },
+    { label: '2026 (YTD)', color: cssVar('--s2') },
+  ]);
+}
 
 /* ---------- shared bar-chart renderer for the two monthly panels ---------- */
 function monthlyBars(containerId, valueFn, labelFn, ttFn, opts) {
@@ -446,6 +546,8 @@ function renderMonthly() {
         <div class="tt-row"><span>New members</span><span>${mo.n}</span></div>
         <div class="tt-row"><span>vs prior month</span><span>${mom}</span></div>
         <div class="tt-row"><span>First-year revenue</span><span>${fmtK(mo.rev)}</span></div>
+        <div class="tt-row"><span>Cash upfront</span><span>${fmtK(mo.cash)}</span></div>
+        <div class="tt-row"><span>MRR added</span><span>${fmtK(mo.mrr)}/mo</span></div>
         <div class="tt-row"><span>Top source</span><span>${topSource(mo)}</span></div>`;
     },
     { height: 250, aria: 'New members per month, January 2025 through July 2026', tickFmt: v => Math.round(v), gridSteps: 3 });
@@ -521,75 +623,6 @@ function renderYoY() {
   ]);
 }
 
-/* ---------- cumulative lines ---------- */
-function renderCume() {
-  const box = document.getElementById('chart-cume');
-  box.innerHTML = '';
-  const W = Math.max(box.clientWidth, 420), H = 260;
-  const pad = { l: 34, r: 46, t: 16, b: 30 };
-  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Cumulative new members by month for 2025 and 2026' });
-
-  const c25 = [], c26 = [];
-  let a = 0, b = 0;
-  for (let m = 1; m <= 12; m++) {
-    const mo = months.find(x => x.y===2025 && x.m===m); a += mo.n; c25.push(a);
-    const mo6 = months.find(x => x.y===2026 && x.m===m);
-    if (mo6) { b += mo6.n; c26.push(b); }
-  }
-  const maxV = Math.max(c25[11], c26[c26.length-1]) * 1.08;
-  const xAt = m => pad.l + (m-1)/11 * iw;
-  const yAt = v => pad.t + ih - (v/maxV)*ih;
-
-  for (let i = 1; i <= 3; i++) {
-    const v = maxV/1.08 * i/3;
-    svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: yAt(v), y2: yAt(v), stroke: cssVar('--grid'), 'stroke-width': 1 }));
-    const t = svgEl('text', { x: pad.l-6, y: yAt(v)+3.5, 'text-anchor': 'end', class: 'axis-t' });
-    t.textContent = Math.round(v); svg.appendChild(t);
-  }
-  svg.appendChild(svgEl('line', { x1: pad.l, x2: W-pad.r, y1: pad.t+ih, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1 }));
-  [1,4,7,10,12].forEach(m => {
-    const t = svgEl('text', { x: xAt(m), y: pad.t+ih+16, 'text-anchor': 'middle', class: 'axis-t' });
-    t.textContent = M_NAMES[m-1]; svg.appendChild(t);
-  });
-
-  const pathOf = arr => arr.map((v,i) => (i?'L':'M') + xAt(i+1) + ',' + yAt(v)).join(' ');
-  svg.appendChild(svgEl('path', { d: pathOf(c25), fill: 'none', stroke: cssVar('--s1'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
-  svg.appendChild(svgEl('path', { d: pathOf(c26), fill: 'none', stroke: cssVar('--s2'), 'stroke-width': 2, 'stroke-linecap': 'round' }));
-  // endpoint markers + labels
-  const e25 = svgEl('circle', { cx: xAt(12), cy: yAt(c25[11]), r: 4, fill: cssVar('--s1'), stroke: cssVar('--surface'), 'stroke-width': 2 });
-  const e26 = svgEl('circle', { cx: xAt(7), cy: yAt(c26[6]), r: 4, fill: cssVar('--s2'), stroke: cssVar('--surface'), 'stroke-width': 2 });
-  svg.appendChild(e25); svg.appendChild(e26);
-  const l25 = svgEl('text', { x: xAt(12)+8, y: yAt(c25[11])+4, class: 'end-label', fill: cssVar('--s1') });
-  l25.textContent = c25[11]; svg.appendChild(l25);
-  const l26 = svgEl('text', { x: xAt(7)+8, y: yAt(c26[6])+4, class: 'end-label', fill: cssVar('--s2') });
-  l26.textContent = c26[6]; svg.appendChild(l26);
-
-  // crosshair + tooltip
-  const cross = svgEl('line', { y1: pad.t, y2: pad.t+ih, stroke: cssVar('--baseline'), 'stroke-width': 1, 'stroke-dasharray': '3 3', visibility: 'hidden' });
-  svg.appendChild(cross);
-  const hit = svgEl('rect', { x: pad.l, y: pad.t, width: iw, height: ih, fill: 'transparent' });
-  hit.addEventListener('mousemove', ev => {
-    const r = svg.getBoundingClientRect();
-    const sx = (ev.clientX - r.left) * (W / r.width);
-    const m = Math.max(1, Math.min(12, Math.round((sx - pad.l)/iw*11 + 1)));
-    cross.setAttribute('x1', xAt(m)); cross.setAttribute('x2', xAt(m));
-    cross.setAttribute('visibility', 'visible');
-    const v26 = m <= 7 ? c26[m-1] : null;
-    showTT(`<div class="tt-title">Through ${M_NAMES[m-1]}</div>
-      <div class="tt-row"><span>2025 cumulative</span><span>${c25[m-1]}</span></div>
-      ${v26 !== null ? `<div class="tt-row"><span>2026 cumulative</span><span>${v26}</span></div>
-      <div class="tt-row"><span>Gap</span><span>+${v26 - c25[m-1]}</span></div>` : ''}`, ev);
-  });
-  hit.addEventListener('mouseleave', () => { cross.setAttribute('visibility', 'hidden'); hideTT(); });
-  svg.appendChild(hit);
-  box.appendChild(svg);
-  legend('legend-cume', [
-    { label: '2025 (full year)', color: cssVar('--s1') },
-    { label: '2026 (YTD)', color: cssVar('--s2') },
-  ]);
-}
-
 /* ---------- 100% stacked share bars (sources / plans) ---------- */
 function renderShare(containerId, legendId, keys, colors, getCounts, getOther, aria) {
   const box = document.getElementById(containerId);
@@ -649,14 +682,13 @@ function renderShares() {
 /* ---------- insights ---------- */
 (function insights() {
   const el = document.getElementById('insights');
-  const paceMoM26 = (y26.n / 6.55).toFixed(1); // through Jul 17 ≈ 6.55 months
   const items = [
-    { h: 'Growth is real and accelerating', p: `2026 has produced <span class="num">98</span> new members through July 17 — <span class="num">+88%</span> over the same window in 2025 (<span class="num">52</span>) — and <span class="num">$619K</span> in first-year revenue, <span class="num">+95%</span> year over year. With five and a half months left, 2026 has already reached <span class="num">82%</span> of 2025’s full-year member count.` },
-    { h: 'The monthly baseline has shifted up', p: `2025 averaged <span class="num">8.3</span> new members/month in Jan–Jul and peaked at <span class="num">18</span> in October. 2026 is averaging <span class="num">~15</span>/month, with a record <span class="num">23</span> in March (Inspire event + a batch of second seats) and no month below 10. If 2025’s stronger second half repeats, 2026 lands around <span class="num">200+</span> members vs 119.` },
-    { h: 'Channel mix diversified sharply', p: `Pure referrals fell from <span class="num">41%</span> of 2025 signups to <span class="num">18%</span> in 2026 — but event-touched deals (Event + Referral&#8201;+&#8201;Event) grew to <span class="num">43%</span>, and the new second-seat motion added <span class="num">15</span> members (15%) from existing member companies. Facebook Ads, which drove the Oct–Nov 2025 spike (8 members), has faded to 5 in all of 2026 — worth a deliberate decision to re-invest or drop.` },
-    { h: 'Plan mix moved to quarterly — watch retention', p: `Annual plans fell from <span class="num">68%</span> of signups to <span class="num">32%</span>, while quarterly grew from <span class="num">22%</span> to <span class="num">48%</span> (driven by the “$1,000 off first quarter” promo). Average first-year value held up — <span class="num">$6,157 → $6,319</span> — and discounting is steady at ~12% of list. The trade-off: more of 2026’s booked revenue depends on quarterly renewals actually happening.` },
-    { h: 'November 2025 was the only stumble', p: `The month-over-month path is otherwise clean: Nov 2025 dropped to <span class="num">7</span> (from 18 in Oct) before December recovered to 11. In 2026 the softest months are May–June (<span class="num">12 → 10</span>) after the March–April event surge — a normal post-event digestion pattern, and July is already at <span class="num">11</span> in just 17 days.` },
-    { h: 'Events are the engine to protect', p: `The biggest months in the data — Oct 2025, Mar 2026, Apr 2026 — all coincide with event pushes (Prosper, Inspire, Operator Room) plus the offers attached to them. Combined Event and Referral+Event sourcing accounts for <span class="num">42</span> of 98 members in 2026. Event cadence and follow-up speed look like the highest-leverage inputs for the rest of 2026.` },
+    { h: 'Three of the four pacing numbers are compounding', p: `Through July 21, 2026 is up <span class="num">+91%</span> on members (103 vs 54), <span class="num">+96%</span> on potential first-year revenue ($643K vs $328K), and <span class="num">+97%</span> on MRR added ($53.6K/mo vs $27.2K/mo) versus the same period of 2025. 2026 has already reached <span class="num">87%</span> of 2025’s full-year member count with five-plus months to go.` },
+    { h: 'Cash upfront is the lagging number — by design', p: `Cash collected at signup is up only <span class="num">+25%</span> ($389K vs $311K) — far behind the other three. The cause is the plan-mix shift: quarterly members pay ~$1,000–2,000 at signup where annual members paid ~$6,500–7,500. Cash per new member fell from <span class="num">$4,896</span> to <span class="num">$3,777</span>. Booked growth is real, but it converts to cash only as quarterly renewals hit — worth tracking renewal collections as a fifth number.` },
+    { h: 'The monthly baseline has shifted up', p: `2025 averaged <span class="num">8.3</span> new members/month in Jan–Jul and peaked at <span class="num">18</span> in October. 2026 is averaging <span class="num">~15</span>/month, with a record <span class="num">23</span> in March (Inspire event + a batch of second seats) and no month below 10. At the current YoY pace, 2026 lands around <span class="num">210–230</span> members vs 119 — if 2025’s stronger second half repeats.` },
+    { h: 'Channel mix diversified sharply', p: `Pure referrals fell from <span class="num">41%</span> of 2025 signups to <span class="num">18%</span> in 2026 — but event-touched deals (Event + Referral&#8201;+&#8201;Event) grew to <span class="num">42%</span>, and the new second-seat motion added <span class="num">16</span> members (16%) from existing member companies. Facebook Ads, which drove the Oct–Nov 2025 spike (8 members), has faded to 6 in all of 2026 — worth a deliberate decision to re-invest or drop.` },
+    { h: 'Plan mix moved to quarterly — watch retention', p: `Annual plans fell from <span class="num">62%</span> of signups to <span class="num">32%</span>, while quarterly grew from <span class="num">28%</span> to <span class="num">47%</span> (driven by the “$1,000 off first quarter” promo). Average first-year value held up — <span class="num">$6,157 → $6,245</span> — so pricing is intact. The trade-off shows up directly in the cash-upfront gap above: more of 2026’s booked revenue depends on quarterly renewals actually happening.` },
+    { h: 'Events are the engine to protect', p: `The biggest months in the data — Oct 2025, Mar 2026, Apr 2026 — all coincide with event pushes (Prosper, Inspire, Operator Room) plus the offers attached to them. Combined Event and Referral+Event sourcing accounts for <span class="num">43</span> of 103 members in 2026. July is already at <span class="num">14</span> members in three weeks — ahead of July 2025’s full-month 13 — with the softest 2026 stretch (May–June) reading as normal post-event digestion.` },
   ];
   el.innerHTML = items.map(i => `<div class="insight"><h4>${i.h}</h4><p>${i.p}</p></div>`).join('');
 })();
@@ -675,6 +707,8 @@ function renderShares() {
       <td>${mo.n}</td>
       <td class="mono-muted">${mom}</td>
       <td>${yoy ? `<span class="${mo.n >= (yoyMo?yoyMo.n:0) ? 'pos' : ''}">${yoy}</span>` : '<span class="mono-muted">—</span>'}</td>
+      <td>${fmt$(mo.cash)}</td>
+      <td>${fmt$(mo.mrr)}</td>
       <td>${fmt$(mo.rev)}</td>
       <td>${mo.n ? fmt$(mo.rev/mo.n) : '—'}</td>
       <td style="text-align:left">${topSource(mo)}</td>
@@ -682,17 +716,17 @@ function renderShares() {
     prev = mo;
   });
   el.innerHTML = `<table>
-    <thead><tr><th>Month</th><th>New members</th><th>MoM</th><th>YoY</th><th>First-yr revenue</th><th>Avg / member</th><th style="text-align:left">Top source</th></tr></thead>
+    <thead><tr><th>Month</th><th>New members</th><th>MoM</th><th>YoY</th><th>Cash upfront</th><th>MRR added</th><th>First-yr revenue</th><th>Avg / member</th><th style="text-align:left">Top source</th></tr></thead>
     <tbody>${rows}</tbody>
     <tbody>
-      <tr class="yr-divider"><td><strong>2025 total</strong></td><td><strong>${y25.n}</strong></td><td></td><td></td><td><strong>${fmt$(y25.rev)}</strong></td><td><strong>${fmt$(y25.avg)}</strong></td><td style="text-align:left">Referral (49)</td></tr>
-      <tr><td><strong>2026 YTD *</strong></td><td><strong>${y26.n}</strong></td><td></td><td><span class="pos"><strong>+88%</strong></span></td><td><strong>${fmt$(y26.rev)}</strong></td><td><strong>${fmt$(y26.avg)}</strong></td><td style="text-align:left">Event (22)</td></tr>
+      <tr class="yr-divider"><td><strong>2025 total</strong></td><td><strong>${y25.n}</strong></td><td></td><td></td><td><strong>${fmt$(y25.cash)}</strong></td><td><strong>${fmt$(y25.mrr)}</strong></td><td><strong>${fmt$(y25.rev)}</strong></td><td><strong>${fmt$(y25.avg)}</strong></td><td style="text-align:left">Referral (49)</td></tr>
+      <tr><td><strong>2026 YTD *</strong></td><td><strong>${y26.n}</strong></td><td></td><td><span class="pos"><strong>+91%</strong></span></td><td><strong>${fmt$(y26.cash)}</strong></td><td><strong>${fmt$(y26.mrr)}</strong></td><td><strong>${fmt$(y26.rev)}</strong></td><td><strong>${fmt$(y26.avg)}</strong></td><td style="text-align:left">Event (22)</td></tr>
     </tbody>
   </table>`;
 })();
 
 /* ---------- render + re-render on resize / theme change ---------- */
-function renderAll() { renderMonthly(); renderYoY(); renderCume(); renderShares(); }
+function renderAll() { renderMonthly(); renderPacing(); renderYoY(); renderShares(); }
 renderAll();
 let rzT;
 window.addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(renderAll, 120); });
