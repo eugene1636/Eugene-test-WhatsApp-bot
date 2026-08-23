@@ -1,0 +1,163 @@
+# MDS KPI board. 13 metrics. Source of truth.
+# type: predictive (tells us what's coming) | responsive (tells us what happened)
+
+departments:
+
+  growth:
+    owner: Sashani
+    kpis:
+      - id: new_members_paid
+        name: New members paid
+        type: responsive
+        source: [stripe, gohighlevel]
+        definition: Count of first-time membership payments in the week.
+        sub_metrics:
+          - by lead source (event, referral, website, facebook, second seat)
+          - with vs without discovery call
+      - id: new_member_cash_collected
+        name: New member cash collected $
+        type: responsive
+        source: [stripe]
+        definition: Sum of upfront dollars collected from new members in the week
+          (first invoice amount, incl. annual prepays). Pairs with count so we see
+          both volume and dollar quality of joins.
+        sub_metrics:
+          - avg first payment per new member
+          - annual vs monthly plan mix
+      - id: discovery_calls_showed
+        name: Discovery calls showed
+        type: predictive
+        source: [gohighlevel]
+        definition: Discovery calls that happened (confirmed/showed) in the week.
+        sub_metrics:
+          - booked, canceled, show rate
+          - trailing 4-week conversion rate of showed calls
+    parked_projects:
+      - qualified_pipeline_adds: No clean read today. Build lead validation process
+          first. Graduates to the board after 8 weeks of clean data.
+
+  retention:
+    owner: Tina / Anita
+    kpis:
+      - id: renewal_collection_rate_21d
+        name: Renewal collection rate (21 days)
+        type: responsive
+        source: [stripe]
+        definition: Of dollars due for renewal in week X, percent collected within
+          21 days of due date. Cohort-based, NOT event-based. Solves broken Stripe
+          MRR and the lapse-then-recover timing problem. Reported on a 21 day lag,
+          refreshed weekly.
+        sub_metrics:
+          - 14-day collection rate (early warning on the same cohort)
+          - dollars still open at day 21, with member names
+          - non-renewal notices given before due date
+          - recovered count and dollars
+      - id: unengaged_members_90d
+        name: Unengaged members (90 days)
+        type: predictive
+        source: [airtable, luma, whatsapp, app, facebook]
+        definition: Members with ZERO activity across all channels in trailing 90
+          days. The accumulating tail of the weekly engagement union.
+        sub_metrics:
+          - of which approaching renewal in next 120 days
+          - newly unengaged this week vs re-engaged this week
+
+  community:
+    owner: Belen
+    kpis:
+      - id: new_member_activation_60d
+        name: New member activation %
+        type: predictive
+        source: [airtable, luma]
+        definition: Percent of members who joined 60-90 days ago who hit ALL of
+          onboarding call + value-add + in-person event registration within their
+          first 60 days. One composite, one formula, computed in Airtable.
+        sub_metrics:
+          - hit rate per component
+          - cohort size
+      - id: weekly_engaged_members
+        name: Engaged members % (weekly)
+        type: predictive
+        source: [luma, whatsapp, app, facebook]
+        definition: Percent of active members with at least one engagement action
+          this week (union across channels, see CLAUDE.md definition of engaged).
+        sub_metrics:
+          - by channel (undercounting FB lurkers is accepted)
+          - 4-week trend
+
+  events:
+    owner: Courtney
+    kpis:
+      - id: qualified_leads_registered
+        name: Qualified leads registered to events
+        type: predictive
+        source: [luma, gohighlevel]
+        definition: Non-member qualified leads who registered for any MDS event
+          this week. Events' contribution to the growth pipeline.
+        sub_metrics:
+          - per event
+          - trailing cost per qualified lead where budget data exists
+      - id: event_nps
+        name: Event NPS
+        type: responsive
+        source: [luma, airtable]
+        definition: NPS from post-event feedback for events completed this week.
+          Stored as a decimal (0.93), never as text.
+        sub_metrics:
+          - response rate
+          - by event type (chapter, connect, mastermind, summit)
+      - id: events_within_budget
+        name: Events within budget %
+        type: responsive
+        source: [clickup]
+        definition: Of events closed in trailing 4 weeks, percent at or under
+          their set budget (per-event or per-head). Committed costs logged by the
+          event lead at close; finance trues up monthly. Measures spend discipline,
+          which the team controls, unlike profit which depends on sponsor sales.
+        sub_metrics:
+          - variance $ per event
+          - cost per attendee vs budget
+          - events closed with no budget logged (hygiene, target zero)
+    monthly_finance_review_only:
+      - event profit / margin (bookkeeping-lagged, most events are lead gen not
+        profit vehicles, reviewed monthly with Josefina, never on the weekly board)
+
+  marketing:
+    owner: James / Ion
+    kpis:
+      - id: content_delivered
+        name: Content delivered
+        type: responsive
+        source: [hootsuite, gohighlevel_esp]
+        definition: Social posts published (Hootsuite API) + emails/newsletters
+          sent (ESP). Two API pulls, zero judgment calls, no ClickUp tagging.
+        sub_metrics:
+          - posts by platform
+          - emails sent, open rate
+      - id: audience_growth
+        name: Audience growth
+        type: predictive
+        source: [hootsuite, website_analytics]
+        definition: Net new social followers this week. Unique website visitors
+          as sub-metric.
+        sub_metrics:
+          - by platform
+          - unique website visitors
+          - application flow starts
+    quarterly_analysis_only:
+      - paid media attribution (delayed attribution, not a weekly number)
+
+  ops:
+    owner: Andy / Doina
+    kpis:
+      - id: support_resolution
+        name: Member support resolution (median hours)
+        type: responsive
+        source: [intercom]
+        definition: Median time to resolve Intercom conversations closed this week.
+          The always-on operational pulse. Process-launch work is judged quarterly
+          as rocks with before/after numbers, not squeezed into a weekly stat.
+        sub_metrics:
+          - conversation volume
+          - reopen rate
+          - median first response time

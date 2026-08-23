@@ -172,3 +172,10 @@ scripts/
 Auto-trigger on new-member signup · tagged content index and auto-matching ·
 escalation-to-Slack lane (the system prompt makes Olivia say she's looping in
 the team on billing/renewal/complaints and stop) · Sprint 3 scale-up.
+
+## Also in this repo
+
+`mds-kpi-system/` is a separate Python project: the automated 13-KPI weekly
+scoreboard that replaces the 109-row manual spreadsheet. It shares nothing with
+the Olivia service except the n8n WhatsApp webhook it can deliver recaps
+through. See `mds-kpi-system/README.md`.
