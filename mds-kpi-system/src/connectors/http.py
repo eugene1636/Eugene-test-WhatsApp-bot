@@ -35,12 +35,18 @@ class RestClient:
         self._sleep = sleep
 
     def get(self, path: str, params: dict[str, Any] | None = None) -> dict:
+        return self._request("GET", path, params=params)
+
+    def post(self, path: str, payload: dict[str, Any]) -> dict:
+        return self._request("POST", path, json=payload)
+
+    def _request(self, method: str, path: str, **kwargs: Any) -> dict:
         url = f"{self.base_url}/{path.lstrip('/')}"
         last_error = "no attempt made"
         for attempt in range(1, self.max_attempts + 1):
             try:
-                response = self.session.get(
-                    url, params=params, headers=self.headers, timeout=TIMEOUT_SECONDS
+                response = self.session.request(
+                    method, url, headers=self.headers, timeout=TIMEOUT_SECONDS, **kwargs
                 )
             except requests.RequestException as exc:
                 last_error = f"{type(exc).__name__} calling {path}"

@@ -10,25 +10,29 @@
                                      |
                           src/metrics/*  (compute 13 KPIs)
                                      |
-                     Airtable "KPI Warehouse" base
+                    Supabase (Postgres) "kpi" schema
                      - metrics (registry from kpis.yaml)
                      - snapshots (append-only weekly values)
                      - member_weeks (engagement union)
                      - renewal_cohorts
                      - source_runs (pull logs, fail-loud)
+                     - views: snapshots_current, board
                                      |
                 +--------------------+--------------------+
                 |                                         |
-     Airtable interface dashboards            src/recap/* (Claude API)
+     Dashboards read the views                src/recap/* (Claude API)
      (board + per-KPI drill-downs)            Monday recaps -> Slack/WhatsApp
 ```
 
 ## Key design decisions
 
-1. Airtable is the warehouse, not the compute layer. Python computes, Airtable
-   stores and displays. Exception: new_member_activation_60d can be an Airtable
-   formula since all inputs already live in the ScoreCard base.
-2. Snapshots are append-only. History never mutates. Corrections = new revision.
+1. Supabase is the warehouse, not the compute layer. Python computes, Postgres
+   stores and serves. Airtable stays the member system of record and is a source
+   for the phase 3 metrics whose inputs already live in the ScoreCard base.
+2. Snapshots are append-only, enforced by a trigger in `db/schema.sql` rather
+   than by convention. History never mutates. Corrections = new revision. The
+   same file refuses a snapshot that is available with no value, unavailable
+   with no reason, or attached to a metric_id that is not in the registry.
 3. Renewal collection is cohort-based on invoice due dates. We never read Stripe's
    MRR or subscription amount fields as truth (discounts, date changes and tier
    changes have made them unreliable for us).

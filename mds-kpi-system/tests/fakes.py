@@ -1,4 +1,8 @@
-"""Fixture doubles for the source systems. No network in the test suite."""
+"""Fixture doubles for the source systems. No network in the test suite.
+
+The warehouse is not faked. It is Postgres, and db/schema.sql carries rules that
+only Postgres can enforce, so those tests use a real database (see conftest.py).
+"""
 from __future__ import annotations
 
 from typing import Any
@@ -73,39 +77,8 @@ class FakeGhl:
         return None
 
 
-class FakeTable:
-    """In-memory stand-in for a pyairtable Table."""
-
-    def __init__(self, rows: list[dict] | None = None) -> None:
-        self.rows = rows or []
-        self._next = len(self.rows) + 1
-
-    def all(self, **kwargs: Any) -> list[dict]:
-        formula = kwargs.get("formula")
-        if not formula:
-            return list(self.rows)
-        return [r for r in self.rows if _matches(formula, r["fields"])]
-
-    def create(self, fields: dict) -> dict:
-        record = {"id": f"rec{self._next:04d}", "fields": dict(fields)}
-        self._next += 1
-        self.rows.append(record)
-        return record
-
-    def update(self, record_id: str, fields: dict) -> dict:
-        for row in self.rows:
-            if row["id"] == record_id:
-                row["fields"].update(fields)
-                return row
-        raise KeyError(record_id)
-
-
-def _matches(formula: str, fields: dict) -> bool:
-    """Understands only the two formula shapes airtable_wh builds."""
-    import re
-
-    pairs = re.findall(r"\{(\w+)\}='([^']*)'", formula)
-    return all(str(fields.get(key, "")) == value for key, value in pairs)
+MONTH = 30 * 86_400
+YEAR = 365 * 86_400
 
 
 def invoice(
@@ -119,7 +92,29 @@ def invoice(
     interval: str = "month",
     billing_reason: str = "subscription_create",
     status: str = "paid",
+    paid_at: int | None = None,
+    line_shape: str = "price",
 ) -> dict:
+    """One Stripe invoice.
+
+    line_shape picks which era of the API the line item looks like:
+    - "price"   pre-2025, or a 2025 invoice with the price expanded
+    - "plan"    the legacy plan field
+    - "pricing" 2025+, where the line only carries a bare price id and the
+                interval has to come off the period
+    """
+    settled = created if paid_at is None else paid_at
+    span = YEAR if interval == "year" else MONTH
+    period = {"start": settled, "end": settled + span}
+    if line_shape == "price":
+        line = {"price": {"recurring": {"interval": interval}}, "period": period}
+    elif line_shape == "plan":
+        line = {"plan": {"interval": interval}, "period": period}
+    else:
+        line = {
+            "pricing": {"price_details": {"price": "price_123"}, "type": "price_details"},
+            "period": period,
+        }
     return {
         "id": invoice_id,
         "status": status,
@@ -128,8 +123,8 @@ def invoice(
         "currency": "usd",
         "billing_reason": billing_reason,
         "customer": {"id": customer_id, "email": email, "name": name},
-        "status_transitions": {"paid_at": created},
-        "lines": {"data": [{"price": {"recurring": {"interval": interval}}}]},
+        "status_transitions": {"paid_at": settled},
+        "lines": {"data": [line]},
     }
 
 
@@ -144,3 +139,23 @@ def appointment(
         "contactId": contact_id,
         "title": "Discovery Call",
     }
+
+
+class FakeRest:
+    """Records requests and replays canned bodies, keyed by path.
+
+    Used where the thing under test is the request we build (header, verb, body)
+    rather than what we do with the answer.
+    """
+
+    def __init__(self, bodies: dict[str, dict] | None = None) -> None:
+        self.bodies = bodies or {}
+        self.requests: list[dict] = []
+
+    def get(self, path: str, params: dict | None = None) -> dict:
+        self.requests.append({"method": "GET", "path": path, "params": params})
+        return self.bodies.get(path, {})
+
+    def post(self, path: str, payload: dict) -> dict:
+        self.requests.append({"method": "POST", "path": path, "json": payload})
+        return self.bodies.get(path, {})

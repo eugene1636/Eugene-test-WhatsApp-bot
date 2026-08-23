@@ -4,11 +4,12 @@ Ship value every phase. Do not build all 13 before the first recap goes out.
 
 ## Phase 1: Warehouse + cleanest metrics (week 1-2)
 
-- [x] Create Airtable "KPI Warehouse" base: tables `metrics` (the registry, seeded
-      from config/kpis.yaml), `snapshots` (append-only weekly values), `source_runs`
-      (pull logs with status, for the fail-loud rule)
-      -> `scripts/bootstrap_warehouse.py` creates the tables and seeds the registry.
-      Still needs running once against a real base id (see README, Standing up).
+- [x] Create the Supabase KPI warehouse: schema `kpi` with `metrics` (the
+      registry, seeded from config/kpis.yaml), `snapshots` (append-only weekly
+      values) and `source_runs` (pull logs with status, for the fail-loud rule),
+      plus the `snapshots_current` and `board` views dashboards read.
+      -> `db/schema.sql` + `scripts/bootstrap_warehouse.py`. Still needs running
+      once against a real project (see README, Standing up).
 - [x] Stripe connector: new member first payments (count + dollars)
 - [x] GoHighLevel connector: discovery calls booked/canceled/showed
 - [x] Compute + snapshot: new_members_paid, new_member_cash_collected,
@@ -56,8 +57,9 @@ Ship value every phase. Do not build all 13 before the first recap goes out.
 - [ ] Per-department Monday recaps (Slack and/or WhatsApp), each showing only that
       team's 2-4 KPIs and sub-metrics, with one suggested action
 - [ ] Eugene/Ian exec recap: all 13, one screen, biggest mover flagged
-- [ ] Airtable interface dashboards: one board view (13 KPIs, RAG vs 4-week trend),
-      one drill-down page per KPI showing sub-metrics and how the number is built
+- [ ] Dashboards on the warehouse views: one board view (13 KPIs, RAG vs 4-week
+      trend) off `kpi.board`, one drill-down per KPI off `kpi.snapshots_current`
+      reading the sub_metrics json
 - [ ] Kill the old spreadsheet. Announce at L10.
 
 ## Parked (explicitly not in scope until later)

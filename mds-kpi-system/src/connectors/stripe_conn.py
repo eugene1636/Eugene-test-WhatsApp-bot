@@ -20,6 +20,16 @@ from ..weeks import Week, week_of
 # billing_reason values that can represent a first membership payment.
 FIRST_PAYMENT_REASONS = {"subscription_create", "manual", None, ""}
 
+# Stripe can only filter invoices on `created`, but we want invoices *paid* in
+# the week. Pull a wider created-window and filter on paid_at, so an invoice
+# raised on the Friday and paid on the Monday lands in the week it was paid.
+PAID_LOOKBACK_DAYS = 7
+
+# Deriving the plan interval from the line period, when no price object is
+# expanded. Stripe removed `line.price` in the 2025 API versions.
+YEARLY_MIN_DAYS = 300
+MONTHLY_MIN_DAYS = 25
+
 
 class StripeSource:
     """Thin wrapper so tests can hand the connector a fake with the same shape."""
@@ -71,15 +81,42 @@ def _customer_field(invoice: Any, field: str) -> str | None:
 
 
 def _plan_interval(invoice: Any) -> str:
-    """month | year | one_time. Read off the line item price, never MRR fields."""
+    """month | year | one_time. Read off the invoice line, never MRR fields.
+
+    Three shapes, tried in order, because Stripe moved this twice:
+    - `line.price.recurring.interval`, the pre-2025 shape and what you get if
+      the price is expanded
+    - `line.plan.interval`, the legacy shape
+    - the length of `line.period`, which works on every API version and needs
+      no expansion. In the 2025+ shape a line only carries
+      `pricing.price_details.price`, a bare price id, so there is no interval to
+      read without a second API call.
+    """
     lines = _get(invoice, "lines") or {}
     for line in _get(lines, "data") or []:
         price = _get(line, "price") or {}
-        recurring = _get(price, "recurring") or {}
-        interval = _get(recurring, "interval")
+        interval = _get(_get(price, "recurring") or {}, "interval")
         if interval:
             return str(interval)
+        interval = _get(_get(line, "plan") or {}, "interval")
+        if interval:
+            return str(interval)
+        span = _period_days(line)
+        if span is None:
+            continue
+        if span >= YEARLY_MIN_DAYS:
+            return "year"
+        if span >= MONTHLY_MIN_DAYS:
+            return "month"
     return "one_time"
+
+
+def _period_days(line: Any) -> float | None:
+    period = _get(line, "period") or {}
+    start, end = _get(period, "start"), _get(period, "end")
+    if not start or not end or end <= start:
+        return None
+    return (int(end) - int(start)) / 86_400
 
 
 def _paid_at(invoice: Any) -> datetime:
@@ -93,16 +130,17 @@ def fetch_new_member_payments(
 ) -> dict:
     """First-time membership payments settled in the week.
 
-    A payment counts as a first-time membership payment when the invoice was
-    raised inside the window, reached status paid, collected more than $0, and
-    the customer has no earlier paid invoice. That last check is what makes this
-    a *new member* number rather than a payments number.
+    A payment counts as a first-time membership payment when it was *paid*
+    inside the window, collected more than $0, and is the earliest paid invoice
+    that customer has. That last check is what makes this a *new member* number
+    rather than a payments number.
     """
     week = _window(week_start, week_end)
     source = client or StripeSource()
 
+    lookback = week.start_ts - PAID_LOOKBACK_DAYS * 86_400
     candidates = source.list_invoices(
-        created={"gte": week.start_ts, "lte": week.end_ts},
+        created={"gte": lookback, "lte": week.end_ts},
         status="paid",
         limit=100,
         expand=["data.customer"],
@@ -113,12 +151,15 @@ def fetch_new_member_payments(
         amount_cents = int(_get(invoice, "amount_paid") or 0)
         if amount_cents <= 0:
             continue
+        paid_at = _paid_at(invoice)
+        if not week.start_dt <= paid_at.astimezone(week.start_dt.tzinfo) <= week.end_dt:
+            continue
         if _get(invoice, "billing_reason") not in FIRST_PAYMENT_REASONS:
             continue
         customer_id = _customer_id(invoice)
         if customer_id is None:
             continue
-        if _has_earlier_paid_invoice(source, customer_id, week.start_ts):
+        if not _is_first_paid_invoice(source, customer_id, _get(invoice, "id")):
             continue
         new_members.append(
             {
@@ -130,7 +171,7 @@ def fetch_new_member_payments(
                 "amount_dollars": round(amount_cents / 100, 2),
                 "currency": (_get(invoice, "currency") or "usd").lower(),
                 "plan_interval": _plan_interval(invoice),
-                "paid_at": _paid_at(invoice).isoformat(),
+                "paid_at": paid_at.isoformat(),
             }
         )
 
@@ -143,16 +184,25 @@ def fetch_new_member_payments(
     }
 
 
-def _has_earlier_paid_invoice(
-    source: StripeSource, customer_id: str, before_ts: int
+def _is_first_paid_invoice(
+    source: StripeSource, customer_id: str, invoice_id: str | None
 ) -> bool:
-    earlier = source.list_invoices(
-        customer=customer_id,
-        status="paid",
-        created={"lt": before_ts},
-        limit=1,
-    )
-    return any(int(_get(inv, "amount_paid") or 0) > 0 for inv in earlier)
+    """Is this the earliest invoice the customer has ever actually paid?
+
+    Compared on paid_at rather than created, because a card retry can settle an
+    older invoice after a newer one. Asking "is this the first" rather than "is
+    there an earlier one" also keeps the candidate itself from disqualifying it,
+    which matters now that the pull window reaches back before the week.
+    """
+    paid = [
+        inv
+        for inv in source.list_invoices(customer=customer_id, status="paid", limit=100)
+        if int(_get(inv, "amount_paid") or 0) > 0
+    ]
+    if not paid:
+        return False
+    earliest = min(paid, key=lambda inv: _paid_at(inv))
+    return _get(earliest, "id") == invoice_id
 
 
 def fetch_new_member_payments_over(

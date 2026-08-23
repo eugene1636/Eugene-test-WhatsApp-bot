@@ -22,13 +22,22 @@ from ..weeks import Week, week_of
 from .http import RestClient
 
 API_BASE = "https://services.leadconnectorhq.com"
-API_VERSION = "2021-07-28"
 
-# GoHighLevel appointmentStatus -> our canonical status.
+# The Version header GoHighLevel wants. Their current marketplace docs say `v3`
+# for both the calendar and the contact endpoints. Older tokens were issued
+# against the date-versioned API (2021-07-28 for contacts, 2021-04-15 for
+# calendars), so this is env config: run scripts/preflight.py and it tells you
+# which value your token actually answers to.
+DEFAULT_API_VERSION = "v3"
+
+# GoHighLevel appointmentStatus -> our canonical status. The full enum is
+# new, confirmed, cancelled, showed, noshow, invalid, completed, active.
 STATUS_MAP = {
     "new": "booked",
     "confirmed": "booked",
+    "active": "booked",
     "showed": "showed",
+    "completed": "showed",
     "noshow": "no_show",
     "no-show": "no_show",
     "cancelled": "canceled",
@@ -60,14 +69,18 @@ class GoHighLevelSource:
         api_key: str | None = None,
         location_id: str | None = None,
         rest: RestClient | None = None,
+        api_version: str | None = None,
     ) -> None:
         self.location_id = location_id or config.require("GHL_LOCATION_ID")
+        self.api_version = (
+            api_version or config.get("GHL_API_VERSION") or DEFAULT_API_VERSION
+        )
         self.rest = rest or RestClient(
             source="gohighlevel",
             base_url=API_BASE,
             headers={
                 "Authorization": f"Bearer {api_key or config.require('GHL_API_KEY')}",
-                "Version": API_VERSION,
+                "Version": self.api_version,
                 "Accept": "application/json",
             },
         )
@@ -93,10 +106,30 @@ class GoHighLevelSource:
         return body.get("contact") or {}
 
     def search_contact_by_email(self, email: str) -> dict | None:
-        body = self.rest.get(
-            "/contacts/",
-            params={"locationId": self.location_id, "query": email, "limit": 5},
-        )
+        """Find one contact by exact email.
+
+        Two shapes, because GoHighLevel replaced the endpoint: the current API
+        is POST /contacts/search with a filter body, the older one was
+        GET /contacts/?query=. Set GHL_CONTACT_SEARCH=get to force the old one;
+        scripts/preflight.py reports which your token answers to.
+        """
+        if (config.get("GHL_CONTACT_SEARCH") or "post").lower() == "get":
+            body = self.rest.get(
+                "/contacts/",
+                params={"locationId": self.location_id, "query": email, "limit": 5},
+            )
+        else:
+            body = self.rest.post(
+                "/contacts/search",
+                {
+                    "locationId": self.location_id,
+                    "page": 1,
+                    "pageLimit": 5,
+                    "filters": [
+                        {"field": "email", "operator": "eq", "value": email}
+                    ],
+                },
+            )
         for contact in body.get("contacts") or []:
             if (contact.get("email") or "").strip().lower() == email:
                 return contact

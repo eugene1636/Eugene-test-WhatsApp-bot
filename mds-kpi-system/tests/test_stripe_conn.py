@@ -1,5 +1,7 @@
 from datetime import date
 
+import pytest
+
 from src.connectors import stripe_conn
 from src.weeks import week_of
 from tests.fakes import FakeStripe, invoice
@@ -48,3 +50,41 @@ def test_payments_outside_the_window_are_excluded():
     ])
     payload = stripe_conn.fetch_new_member_payments(WEEK.start, WEEK.end, client=source)
     assert payload["new_members"] == []
+
+
+def test_an_invoice_paid_inside_the_week_counts_even_if_raised_before_it():
+    # raised on the Friday, card settled on the Tuesday
+    source = FakeStripe([
+        invoice("in_late", "cus_g", WEEK.start_ts - 3 * 86_400, 49_900, paid_at=MID_WEEK),
+    ])
+    payload = stripe_conn.fetch_new_member_payments(WEEK.start, WEEK.end, client=source)
+    assert [m["invoice_id"] for m in payload["new_members"]] == ["in_late"]
+
+
+def test_an_invoice_raised_in_the_week_but_paid_after_it_does_not_count():
+    source = FakeStripe([
+        invoice("in_open", "cus_h", MID_WEEK, 49_900, paid_at=WEEK.end_ts + 86_400),
+    ])
+    payload = stripe_conn.fetch_new_member_payments(WEEK.start, WEEK.end, client=source)
+    assert payload["new_members"] == []
+
+
+def test_a_retry_that_settles_an_older_invoice_late_is_still_the_first_payment():
+    # in_first was raised before the week and only cleared inside it, after a
+    # second invoice had already been raised. Paid order, not created order.
+    source = FakeStripe([
+        invoice("in_first", "cus_i", WEEK.start_ts - 5 * 86_400, 49_900, paid_at=MID_WEEK),
+        invoice("in_second", "cus_i", MID_WEEK + 3600, 49_900, paid_at=MID_WEEK + 3600),
+    ])
+    payload = stripe_conn.fetch_new_member_payments(WEEK.start, WEEK.end, client=source)
+    assert [m["invoice_id"] for m in payload["new_members"]] == ["in_first"]
+
+
+@pytest.mark.parametrize("line_shape", ["price", "plan", "pricing"])
+@pytest.mark.parametrize("interval", ["month", "year"])
+def test_the_plan_interval_survives_every_stripe_line_item_shape(line_shape, interval):
+    source = FakeStripe([
+        invoice("in_1", "cus_a", MID_WEEK, 49_900, interval=interval, line_shape=line_shape),
+    ])
+    payload = stripe_conn.fetch_new_member_payments(WEEK.start, WEEK.end, client=source)
+    assert payload["new_members"][0]["plan_interval"] == interval

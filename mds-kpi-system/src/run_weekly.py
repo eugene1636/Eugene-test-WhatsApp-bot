@@ -24,13 +24,13 @@ from dataclasses import asdict
 from typing import Callable
 
 from . import registry as registry_module
-from .connectors.airtable_wh import Warehouse
 from .context import RunContext
 from .errors import SourceError
 from .metrics import growth
 from .models import MetricResult, Snapshot
 from .recap import generator, sender
 from .validation import BLOCK, Finding, blocked, validate
+from .warehouse import Warehouse
 from .weeks import Week, last_full_week, parse_week
 
 # Departments with a live compute(). Phase 1 = growth only.
@@ -104,11 +104,8 @@ def main(argv: list[str] | None = None) -> int:
     history = _read_history(warehouse, results, week)
     written = 0
     if warehouse is not None and not dry_run:
-        for result in results:
-            warehouse.write_snapshot(result)
-            written += 1
-        for run in ctx.runs:
-            warehouse.write_source_run(run)
+        # one transaction, so a crash never leaves half a week in the warehouse
+        written = len(warehouse.write_week(results, ctx.runs))
 
     # 4: validate
     findings = validate(

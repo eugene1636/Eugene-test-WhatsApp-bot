@@ -9,7 +9,7 @@ The hard rule: if a metric can't be pulled automatically from a source system, i
 a KPI, it's a report, and it does not go on the board.
 
 The system does three things:
-1. Pulls raw data weekly from source systems into an Airtable "KPI Warehouse" base
+1. Pulls raw data weekly from source systems into the Supabase KPI warehouse
 2. Computes the 13 KPIs + their sub-metrics and writes weekly snapshots
 3. Generates department-specific weekly recaps (with callouts on issues and suggested
    actions) using the Claude API, delivered via Slack and/or WhatsApp
@@ -20,7 +20,11 @@ implementing any metric. `docs/kpi-definitions.md` is the human-readable version
 ## Stack and source systems
 
 - Python 3.11+, plain scripts, cron/n8n-triggered. No framework. Keep it boring.
-- Airtable = warehouse and member system of record (ScoreCard base already exists)
+- Supabase (Postgres) = the KPI warehouse. Schema in `db/schema.sql`, access in
+  `src/warehouse.py`. The append-only rule and the no-value-no-reason rule are
+  database constraints, not conventions, so nothing can quietly break them.
+- Airtable = member system of record (ScoreCard base already exists). A source
+  for the phase 3 activation and engagement metrics, not the warehouse.
 - Stripe = payments/subscriptions (WARNING: Stripe MRR is known-broken for us due to
   discounts, changed subscription dates and tier changes. NEVER compute MRR from
   Stripe subscription objects. Renewal collection is computed from invoices/charges
@@ -86,8 +90,9 @@ calendar."
 - No attendance-rate metric (static, no financial meaning for us)
 - No paid-media attribution metrics (delayed attribution, quarterly analysis only)
 - No app WAU/MAU on the main board (app is no longer a focus)
-- No dashboards inside this repo for v1. Dashboards read from the Airtable warehouse
-  (Airtable interfaces first, custom later). This repo is pull + compute + recap.
+- No dashboards inside this repo for v1. Dashboards read the warehouse views
+  `kpi.board` and `kpi.snapshots_current` (Supabase table views first, a BI tool
+  later). This repo is pull + compute + recap.
 
 ## Build order
 
